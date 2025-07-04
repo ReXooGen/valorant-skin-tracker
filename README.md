@@ -1,4 +1,4 @@
-# 🎮 Valorant Skin Peek Bot
+# 🎮 Valorant Skin Tracker Bot
 
 [![Discord.js](https://img.shields.io/badge/Discord.js-v14-blue.svg)](https://discord.js.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-v16+-green.svg)](https://nodejs.org/)
