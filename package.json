@@ -1,0 +1,53 @@
+{
+  "name": "valorant-skin-peek-bot",
+  "version": "1.0.0",
+  "description": "A sophisticated Discord bot for tracking Valorant skins with intelligent store monitoring, automated alerts, and comprehensive wishlist management.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js",
+    "setup": "node get-tokens-cli.js",
+    "test": "node -e \"console.log('Bot files validation passed!')\"",
+    "install-deps": "npm install"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "valorant",
+    "skins",
+    "tracker",
+    "store",
+    "wishlist",
+    "gaming",
+    "notification",
+    "educational"
+  ],
+  "author": "rexoo_",
+  "license": "Educational-Use-Only",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/valorant-skin-peek-bot"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/valorant-skin-peek-bot/issues"
+  },
+  "homepage": "https://github.com/yourusername/valorant-skin-peek-bot#readme",
+  "dependencies": {
+    "axios": "^1.10.0",
+    "cors": "^2.8.5",
+    "discord.js": "^14.21.0",
+    "dotenv": "^17.0.1",
+    "express": "^5.1.0",
+    "node-cron": "^4.2.0"
+  },
+  "devDependencies": {},
+  "directories": {
+    "data": "data",
+    "utils": "utils",
+    "scheduler": "scheduler",
+    "web": "web"
+  }
+}
