@@ -2,35 +2,62 @@
 
 [![Discord.js](https://img.shields.io/badge/Discord.js-v14-blue.svg)](https://discord.js.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-v16+-green.svg)](https://nodejs.org/)
+[![Web Dashboard](https://img.shields.io/badge/Web-Dashboard-brightgreen.svg)](#web-dashboard)
 [![License](https://img.shields.io/badge/License-Educational-yellow.svg)](#license)
 
-A sophisticated Discord bot for tracking Valorant skins with intelligent store monitoring, automated alerts, and comprehensive wishlist management. Built for educational purposes to demonstrate Discord bot development and API integration.
+A comprehensive Valorant skin tracking solution featuring a Discord bot with intelligent store monitoring, automated alerts, advanced wishlist management, and a full-featured web dashboard. Built for educational purposes to demonstrate modern bot development, web interfaces, and API integration.
 
 ## ✨ Features
 
+### 🌐 Web Dashboard
+- **Modern Web Interface** - Beautiful, responsive dashboard accessible via browser
+- **Multi-language Support** - Full English and Indonesian localization
+- **Real-time Updates** - Live store and wishlist synchronization
+- **Mobile-Friendly** - Optimized for phone, tablet, and desktop
+- **Advanced Analytics** - Detailed charts, statistics, and insights
+- **Token Management** - Easy setup and monitoring through web interface
+
 ### 🛍️ Store Management
 - **Real-time Store Checking** - Fetch current Valorant store instantly
+- **Grid Layout Design** - Modern card-based store display
 - **High-Quality Images** - Display skins with full render and thumbnails
+- **Smart Image Fallbacks** - Multiple image sources for reliability
 - **VP & IDR Pricing** - Automatic currency conversion to Indonesian Rupiah
-- **Store Reset Timer** - Know exactly when the store refreshes
+- **Store Statistics** - Total skins, average prices, and analytics
+- **Filter System** - Filter by All/Wishlist/Premium/Budget categories
 
 ### 📝 Smart Wishlist System
-- **Fuzzy Search** - Add skins by partial names (e.g., "Prime Phantom")
-- **Auto-complete** - Intelligent skin name suggestions
-- **Wishlist Detection** - Instantly spot wishlist skins in store
-- **Easy Management** - Add/remove skins with simple commands
+- **Advanced Search** - Fuzzy search with auto-correct suggestions
+- **Auto-complete** - Intelligent skin name suggestions with thumbnails
+- **Modern Card Design** - Beautiful wishlist cards with animations
+- **Wishlist Detection** - Instantly spot wishlist skins in store with badges
+- **Easy Management** - Add/remove skins with intuitive interface
+- **Priority System** - Organize skins by importance levels
+- **Backup & Restore** - Import/export wishlist functionality
 
 ### 🔔 Intelligent Alerts
 - **Manual Alerts** - Immediate notifications when checking store
 - **Automated Daily Checks** - Auto-check at 7:05 PM WIB (after store reset)
 - **Direct Messages** - Private notifications for wishlist matches
 - **Anti-Spam Protection** - Maximum one alert per skin per day
+- **Email Notifications** - Optional email alerts for wishlist matches
 
-### 🔧 Advanced Features
+### � Analytics & Insights
+- **Personal Analytics** - Track your store activity and wishlist performance
+- **Price History** - Monitor skin price trends over time
+- **Activity Timeline** - View your interaction history
+- **Statistics Dashboard** - Comprehensive data visualization
+- **Usage Metrics** - Understand your skin tracking patterns
+- **Export Data** - Download your analytics for external use
+
+### �🔧 Advanced Features
 - **Token Management** - Health monitoring and auto-expiry detection
+- **Database Integration** - SQLite database for reliable data storage
 - **OAuth Integration** - Discord Connections support for seamless auth
 - **Error Handling** - Comprehensive error messages and troubleshooting
 - **Multi-Region Support** - AP, NA, EU regions supported
+- **Scheduled Tasks** - Automated background processes
+- **API Rate Limiting** - Intelligent request management
 
 ## 🚀 Quick Start
 
@@ -57,11 +84,18 @@ A sophisticated Discord bot for tracking Valorant skins with intelligent store m
    Use one of these setup methods:
    - **Quick Setup** (Recommended): Use `/quicksetup` command in Discord
    - **CLI Tool**: Run `node get-tokens-cli.js` for guided setup
+   - **Web Dashboard**: Access the web interface for easy setup
 
 5. **Start the bot:**
    ```bash
    node index.js
    ```
+
+6. **Access Web Dashboard:**
+   - Open browser to `http://localhost:3000`
+   - Enter your Discord User ID
+   - Complete setup through web interface
+   - Enjoy enhanced features!
 
 ## 🎯 Commands Overview
 
@@ -71,11 +105,12 @@ A sophisticated Discord bot for tracking Valorant skins with intelligent store m
 | `/quicksetup` | Quick token setup directly in Discord |
 | `/autotokens` | CLI tool guide and instructions |
 | `/checktoken` | Verify if your tokens are still valid |
+| `/webdashboard` | Get web dashboard access link |
 
 ### 📝 Wishlist Commands
 | Command | Description |
 |---------|-------------|
-| `/addwishlist <skin_name>` | Add a skin to your wishlist |
+| `/addwishlist <skin_name>` | Add a skin to your wishlist with auto-suggestions |
 | `/wishlist` | View your current wishlist |
 | `/removewishlist <skin_name>` | Remove a skin from wishlist |
 
@@ -83,6 +118,14 @@ A sophisticated Discord bot for tracking Valorant skins with intelligent store m
 | Command | Description |
 |---------|-------------|
 | `/store` | Check your Valorant store for skins |
+| `/bundles` | Check current featured bundles |
+| `/nightmarket` | Check Night Market discounts (if active) |
+
+### 📊 Analytics Commands
+| Command | Description |
+|---------|-------------|
+| `/analytics [period]` | View personal analytics and statistics |
+| `/pricehistory <skin_name> [days]` | View price history for specific skin |
 
 ### ⚙️ Advanced Commands
 | Command | Description |
@@ -106,6 +149,13 @@ A sophisticated Discord bot for tracking Valorant skins with intelligent store m
 3. Enter required information when prompted
 4. Tokens will be automatically saved
 
+### Method 3: Web Dashboard (Modern)
+1. Start the bot: `node index.js`
+2. Open browser to `http://localhost:3000`
+3. Enter your Discord User ID
+4. Follow the web-based setup wizard
+5. Manage everything through the beautiful dashboard! 🌐
+
 ### Getting Required Information
 
 #### Discord User ID
@@ -121,22 +171,41 @@ A sophisticated Discord bot for tracking Valorant skins with intelligent store m
 
 ```
 valorant-skin-peek-bot/
-├── 📁 data/                    # Data storage
-│   ├── alert-history.json      # Alert tracking
-│   ├── tokens.json            # User tokens
-│   └── wishlist.json          # User wishlists
-├── 📁 scheduler/              # Automated tasks
-│   ├── dailyCheck.js          # Daily store checker
-│   └── dailyChecker.js        # Scheduler implementation
-├── 📁 utils/                  # Utility functions
-│   └── valorantApi.js         # Valorant API integration
-├── 📁 web/                    # Web interface
-│   └── dashboard.js           # OAuth dashboard
-├── 📄 index.js                # Main bot file
-├── 📄 get-tokens-cli.js       # CLI token tool
-├── 📄 setup-wizard.js         # Setup utilities
-├── 📄 oauth-server.js         # OAuth server
-└── 📄 package.json            # Dependencies
+├── 📁 analytics/              # Analytics service
+│   └── service.js             # Analytics data processing
+├── 📁 data/                   # Data storage
+│   ├── alert-history.json     # Alert tracking
+│   ├── tokens.json           # User tokens
+│   ├── wishlist.json         # User wishlists
+│   └── valorant_tracker.db   # SQLite database
+├── 📁 database/              # Database services
+│   └── service.js            # Database operations
+├── 📁 locales/               # Internationalization
+│   ├── en.json               # English translations
+│   └── id.json               # Indonesian translations
+├── 📁 scheduler/             # Automated tasks
+│   └── dailyChecker.js       # Daily store checker
+├── 📁 utils/                 # Utility functions
+│   ├── valorantApi.js        # Valorant API integration
+│   └── i18n.js               # Internationalization helper
+├── 📁 web/                   # Web dashboard
+│   ├── 📁 public/            # Static files
+│   │   ├── css/              # Stylesheets
+│   │   └── js/               # Client-side JavaScript
+│   ├── 📁 routes/            # Web routes
+│   │   ├── api.js            # API endpoints
+│   │   ├── auth.js           # Authentication
+│   │   ├── dashboard.js      # Dashboard routes
+│   │   └── analytics.js      # Analytics routes
+│   ├── 📁 views/             # EJS templates
+│   │   ├── dashboard/        # Dashboard pages
+│   │   └── auth/             # Authentication pages
+│   ├── � utils/             # Web utilities
+│   └── server.js             # Express server
+├── �📄 index.js               # Main bot file
+├── 📄 get-tokens-cli.js      # CLI token tool
+├── 📄 setup-advanced.bat     # Windows setup script
+└── 📄 package.json           # Dependencies
 ```
 
 ## 🛡️ Discord Bot Setup
@@ -176,11 +245,68 @@ Create a `.env` file:
 # Discord Bot Token (Required)
 DISCORD_TOKEN=your_bot_token_here
 
+# Web Dashboard Configuration
+WEB_URL=http://localhost:3000
+PORT=3000
+ENABLE_WEB_DASHBOARD=true
+
 # Optional: For advanced features
 OAUTH_CLIENT_ID=your_oauth_client_id
 OAUTH_CLIENT_SECRET=your_oauth_client_secret
 OAUTH_REDIRECT_URI=http://localhost:3000/callback
+
+# Database Configuration
+DATABASE_PATH=./data/valorant_tracker.db
+
+# Internationalization
+DEFAULT_LANGUAGE=en
+SUPPORTED_LANGUAGES=en,id
 ```
+
+## 🌐 Web Dashboard
+
+### Features
+The web dashboard provides an enhanced experience beyond Discord commands:
+
+#### 🎨 **Beautiful Interface**
+- Modern, responsive design that works on all devices
+- Dark theme optimized for extended use
+- Smooth animations and micro-interactions
+- Intuitive navigation and user experience
+
+#### 🛍️ **Enhanced Store View**
+- Grid-based store layout with card designs
+- Real-time store updates and refresh functionality
+- Advanced filtering (All/Wishlist/Premium/Budget)
+- Store statistics and analytics
+- High-quality skin images with fallbacks
+
+#### 📝 **Advanced Wishlist Management**
+- Add skins with intelligent search and auto-suggestions
+- Beautiful wishlist cards with animations
+- Batch operations and wishlist organization
+- Import/export functionality
+- Priority system for skin organization
+
+#### 📊 **Comprehensive Analytics**
+- Personal usage statistics and insights
+- Price history charts and trends
+- Activity timeline and tracking
+- Visual data representation with charts
+- Export capabilities for data analysis
+
+#### ⚙️ **Easy Configuration**
+- Web-based token setup and management
+- Settings management with real-time validation
+- Multi-language support (English/Indonesian)
+- Token health monitoring and alerts
+
+### Accessing the Dashboard
+1. Start the bot: `node index.js`
+2. Open browser to `http://localhost:3000`
+3. Enter your Discord User ID
+4. Complete any required setup
+5. Enjoy the enhanced experience!
 
 ## 🔧 Configuration
 
@@ -197,14 +323,20 @@ The bot automatically converts VP prices to Indonesian Rupiah based on official 
 
 ## 🎨 Screenshots
 
+### Web Dashboard
+![Modern web dashboard with dark theme](https://via.placeholder.com/800x400/1a1a1a/ffffff?text=Web+Dashboard+-+Dark+Theme)
+
 ### Store Display
-![Store display with skin images and pricing](https://via.placeholder.com/800x400/ff4655/ffffff?text=Store+Display+Screenshot)
+![Grid-based store display with filtering](https://via.placeholder.com/800x400/ff4655/ffffff?text=Store+Grid+Layout)
 
 ### Wishlist Management
-![Wishlist interface showing added skins](https://via.placeholder.com/800x400/00ff88/ffffff?text=Wishlist+Management+Screenshot)
+![Enhanced wishlist interface with card design](https://via.placeholder.com/800x400/00ff88/ffffff?text=Wishlist+Card+Interface)
 
-### Alert System
-![Alert notification for wishlist matches](https://via.placeholder.com/800x400/0099ff/ffffff?text=Alert+System+Screenshot)
+### Analytics Dashboard
+![Comprehensive analytics with charts](https://via.placeholder.com/800x400/389df1/ffffff?text=Analytics+Dashboard)
+
+### Mobile Interface
+![Mobile-responsive design](https://via.placeholder.com/400x600/6f42c1/ffffff?text=Mobile+Responsive)
 
 ## 🐛 Troubleshooting
 
@@ -226,12 +358,23 @@ The bot automatically converts VP prices to Indonesian Rupiah based on official 
 - **Solution**: Some accounts may need manual token setup
 - **Alternative**: Use `/quicksetup` instead of OAuth method
 
+#### Web Dashboard Not Loading
+- **Solution**: Check if port 3000 is available, try different port
+- **Check**: Ensure `ENABLE_WEB_DASHBOARD=true` in .env file
+- **Alternative**: Use Discord commands if web interface is unavailable
+
+#### Database Connection Issues
+- **Solution**: Ensure data directory exists and is writable
+- **Check**: Verify SQLite database file permissions
+- **Reset**: Delete `valorant_tracker.db` to recreate database
+
 ### Getting Help
 
 1. **Check `/help`** command for comprehensive guidance
 2. **Verify setup** with `/checktoken` command
 3. **Test features** with `/autocheck test`
-4. **Contact developer**: `rexoo_` on Discord for bug reports
+4. **Web Dashboard**: Use `/webdashboard` for web interface access
+5. **Contact developer**: `rexoo_` on Discord for bug reports
 
 ## 🔄 Daily Automation
 
@@ -245,33 +388,53 @@ The bot automatically:
 
 ### Educational Purpose
 This bot is created for **educational purposes only** to demonstrate:
-- Discord bot development with Discord.js
-- API integration and data handling
-- Automated scheduling and notifications
-- User authentication and security
+- Modern Discord bot development with Discord.js v14
+- Full-stack web development with Express.js and EJS
+- RESTful API design and implementation
+- Database integration with SQLite
+- Real-time web interfaces and responsive design
+- Internationalization and multi-language support
+- Automated scheduling and background tasks
+- User authentication and security best practices
 
 ### Respect Terms of Service
 - Always respect Riot Games' Terms of Service
 - Use responsibly and ethically
-- This tool is for learning and personal use
+- This tool is for learning and personal use only
+- Educational demonstration of modern web technologies
 
 ### Privacy & Security
-- Tokens are stored locally in JSON files
+- Tokens are stored locally in encrypted JSON files
+- Database uses SQLite for local data storage
 - No data is transmitted to external servers
 - Users control their own authentication data
+- Web dashboard runs locally on your machine
 
 ## 📋 Dependencies
 
 ```json
 {
   "discord.js": "^14.21.0",
-  "axios": "^1.10.0",
+  "axios": "^1.10.0", 
   "dotenv": "^17.0.1",
   "express": "^5.1.0",
+  "ejs": "^3.1.10",
+  "sqlite3": "^5.1.7",
   "node-cron": "^4.2.0",
-  "cors": "^2.8.5"
+  "cors": "^2.8.5",
+  "multer": "^1.4.5-lts.1",
+  "helmet": "^8.0.0",
+  "compression": "^1.7.5"
 }
 ```
+
+### Key Technologies
+- **Backend**: Node.js with Express.js framework
+- **Database**: SQLite3 for reliable local storage
+- **Frontend**: EJS templating with modern CSS/JavaScript
+- **Discord**: Discord.js v14 for bot functionality
+- **Security**: Helmet.js for security headers
+- **Performance**: Compression middleware for optimization
 
 ## 🤝 Contributing
 
@@ -290,22 +453,51 @@ This project is licensed for **Educational Use Only**. Created to demonstrate Di
 
 ## 🎯 Roadmap
 
-- [ ] Web dashboard for easier token management
-- [ ] Multi-language support (Indonesian, English)
-- [ ] Advanced statistics and analytics
-- [ ] Skin price history tracking
-- [ ] Bundle and collection monitoring
-- [ ] Mobile-friendly web interface
+### ✅ Completed Features
+- [x] Discord bot with slash commands
+- [x] Real-time store checking and wishlist management
+- [x] Automated daily alerts and notifications
+- [x] Comprehensive web dashboard
+- [x] Multi-language support (English/Indonesian)
+- [x] Advanced analytics and statistics
+- [x] Database integration with SQLite
+- [x] Mobile-responsive web interface
+- [x] Price history tracking
+- [x] Modern UI with animations and themes
+
+### 🚧 In Development
+- [ ] Enhanced price prediction algorithms
+- [ ] Advanced wishlist organization features
+- [ ] Social features and user interactions
+- [ ] Extended skin metadata and information
+- [ ] Performance optimizations and caching
+
+### 🔮 Future Plans
+- [ ] Mobile app development (React Native)
+- [ ] Cloud deployment options
+- [ ] Advanced machine learning for price predictions
+- [ ] Community features and sharing
+- [ ] Extended API integrations
+- [ ] Plugin system for extensibility
 
 ## 🙏 Acknowledgments
 
-- **Riot Games** for the Valorant API
-- **Discord.js** community for excellent documentation
-- **Node.js** ecosystem for powerful tools
-- **Educational purpose** - Built for learning and development
+- **Riot Games** for the Valorant API and game content
+- **Discord.js** community for excellent documentation and support
+- **Node.js** ecosystem for powerful development tools
+- **Express.js** for robust web framework capabilities
+- **SQLite** for reliable local database solutions
+- **Open Source Community** for inspiration and best practices
+- **Educational Community** - Built for learning modern web development
+
+## 🌟 Star History
+
+If this project helped you learn or build something amazing, please consider giving it a star! ⭐
 
 ---
 
-**Made with ❤️ for the Valorant community**
+**Made with ❤️ for the Valorant community and educational purposes**
+
+**🎓 Educational Focus**: This project demonstrates modern full-stack development, API integration, real-time web interfaces, and Discord bot development.
 
 For questions, suggestions, or bug reports, contact: `rexoo_` on Discord
