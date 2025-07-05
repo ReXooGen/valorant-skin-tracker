@@ -324,20 +324,19 @@ The bot automatically converts VP prices to Indonesian Rupiah based on official 
 ## 🎨 Screenshots
 
 ### Web Dashboard
-![Modern web dashboard with dark theme](https:https://github.com/ReXooGen/valorant-skin-tracker/blob/main/image/Dashboard.png)
+![Modern web dashboard with dark theme](image/Dashboard.png)
 
 ### Store Display
-![Grid-based store display with filtering](https://https://github.com/ReXooGen/valorant-skin-tracker/blob/main/image/Store.png)
+![Grid-based store display with filtering](image/Store.png)
 
 ### Wishlist Management
-![Enhanced wishlist interface with card design](https://https://github.com/ReXooGen/valorant-skin-tracker/blob/main/image/Wishlist.png)
-
+![Enhanced wishlist interface with card design](image/Wishlist.png)
 
 ### Analytics Dashboard
-![Comprehensive analytics with charts](https:https://github.com/ReXooGen/valorant-skin-tracker/blob/main/image/Analytics.png)
+![Comprehensive analytics with charts](image/Analytics.png)
 
 ### Settings Display
-![Comprehensive analytics with charts](https:https://github.com/ReXooGen/valorant-skin-tracker/blob/main/image/Settings.png)
+![Enhanced Settings](image/Settings.png)
 
 
 ## 🐛 Troubleshooting
