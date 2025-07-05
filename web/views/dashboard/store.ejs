@@ -1,0 +1,436 @@
+<%- include('./store-content') %>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize skin search widget if available
+    if (typeof SkinSearchWidget !== 'undefined') {
+        const searchInput = document.querySelector('[data-skin-search]');
+        if (searchInput) {
+            new SkinSearchWidget(searchInput, {
+                placeholder: 'Search skins in store...',
+                allowAddToWishlist: true,
+                showImages: true
+            });
+        }
+    }
+
+    // Unified skin image loading with fallbacks (same as wishlist)
+    window.loadSkinImage = function(imgElement, skinUuid, skinName) {
+        const fallbackImages = [
+            `https://media.valorant-api.com/weaponskins/${skinUuid}/displayicon.png`,
+            `https://media.valorant-api.com/weaponskinlevels/${skinUuid}/displayicon.png`,
+            `https://media.valorant-api.com/weaponskins/${skinUuid}/chromas/standard/fullrender.png`
+        ];
+        
+        let currentIndex = 0;
+        
+        function tryNextImage() {
+            if (currentIndex >= fallbackImages.length) {
+                // Show weapon icon placeholder based on skin name
+                const weaponType = getWeaponTypeFromName(skinName);
+                imgElement.className = 'skin-image-placeholder weapon-' + weaponType;
+                imgElement.innerHTML = '<i class="fas fa-' + getWeaponIcon(weaponType) + '"></i>';
+                imgElement.style.display = 'flex';
+                imgElement.style.alignItems = 'center';
+                imgElement.style.justifyContent = 'center';
+                return;
+            }
+            
+            const img = new Image();
+            img.onload = function() {
+                imgElement.src = fallbackImages[currentIndex];
+                imgElement.style.display = 'block';
+            };
+            img.onerror = function() {
+                currentIndex++;
+                tryNextImage();
+            };
+            img.src = fallbackImages[currentIndex];
+        }
+        
+        tryNextImage();
+    };
+
+    // Get weapon type from skin name
+    function getWeaponTypeFromName(skinName) {
+        const name = skinName.toLowerCase();
+        if (name.includes('vandal')) return 'vandal';
+        if (name.includes('phantom')) return 'phantom';
+        if (name.includes('operator')) return 'operator';
+        if (name.includes('sheriff')) return 'sheriff';
+        if (name.includes('guardian')) return 'guardian';
+        if (name.includes('classic')) return 'classic';
+        if (name.includes('knife') || name.includes('melee')) return 'knife';
+        return 'unknown';
+    }
+
+    // Get weapon icon
+    function getWeaponIcon(weaponType) {
+        const icons = {
+            'vandal': 'crosshairs',
+            'phantom': 'bullseye',
+            'operator': 'crosshairs',
+            'sheriff': 'dot-circle',
+            'guardian': 'target',
+            'classic': 'circle',
+            'knife': 'cut',
+            'unknown': 'question'
+        };
+        return icons[weaponType] || 'question';
+    }
+
+    // Add to wishlist functionality with auto-correct support
+    window.addToWishlist = function(skinUuid, skinName) {
+        const button = event.target.closest('button');
+        if (!button) return;
+        
+        // Show loading state
+        const originalContent = button.innerHTML;
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+        
+        fetch('/api/wishlist/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                skinUuid: skinUuid,
+                skinName: skinName
+            })
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(result) {
+            if (result.success) {
+                // Update button to show it's in wishlist
+                button.innerHTML = '<i class="fas fa-heart"></i> In Wishlist';
+                button.classList.remove('btn-outline-danger');
+                button.classList.add('btn-danger');
+                button.onclick = function() { removeFromWishlist(skinUuid, skinName); };
+                
+                showNotification('success', result.message || 'Added to wishlist!');
+            } else if (result.requiresConfirmation && result.suggestions) {
+                // Show auto-correct suggestions
+                showSuggestions(result.suggestions, skinName);
+                button.disabled = false;
+                button.innerHTML = originalContent;
+            } else {
+                throw new Error(result.error || 'Failed to add to wishlist');
+            }
+        })
+        .catch(function(error) {
+            console.error('Error adding to wishlist:', error);
+            showNotification('error', error.message || 'Failed to add to wishlist');
+            
+            // Reset button
+            button.disabled = false;
+            button.innerHTML = originalContent;
+        });
+    };
+
+    // Show auto-correct suggestions (like Discord bot)
+    function showSuggestions(suggestions, originalName) {
+        const modal = document.createElement('div');
+        modal.className = 'modal fade';
+        modal.innerHTML = `
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Skin not found</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Skin "${originalName}" not found. Did you mean one of these?</p>
+                        <div class="suggestion-list">
+                            ${suggestions.map((suggestion, index) => `
+                                <button class="btn btn-outline-primary w-100 mb-2" 
+                                        onclick="addSuggestionToWishlist('${suggestion.uuid}', '${suggestion.displayName}')">
+                                    ${suggestion.displayName}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        const bootstrapModal = new bootstrap.Modal(modal);
+        bootstrapModal.show();
+        
+        modal.addEventListener('hidden.bs.modal', function() {
+            modal.remove();
+        });
+    }
+
+    // Add suggestion to wishlist
+    window.addSuggestionToWishlist = function(skinUuid, skinName) {
+        // Close modal
+        const modal = document.querySelector('.modal.show');
+        if (modal) {
+            bootstrap.Modal.getInstance(modal).hide();
+        }
+        
+        // Add to wishlist
+        fetch('/api/wishlist/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                skinUuid: skinUuid,
+                skinName: skinName
+            })
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(result) {
+            if (result.success) {
+                showNotification('success', result.message || 'Added to wishlist!');
+                // Optionally refresh the page to show updated wishlist status
+                setTimeout(function() {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                showNotification('error', result.error || 'Failed to add to wishlist');
+            }
+        })
+        .catch(function(error) {
+            showNotification('error', 'Failed to add to wishlist');
+        });
+    };
+
+    // Remove from wishlist functionality
+    window.removeFromWishlist = function(skinUuid, skinName) {
+        const button = event.target.closest('button');
+        if (!button) return;
+        
+        if (!confirm(`Remove ${skinName} from wishlist?`)) {
+            return;
+        }
+        
+        // Show loading state
+        const originalContent = button.innerHTML;
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Removing...';
+        
+        fetch('/api/wishlist/remove', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                skin_uuid: skinUuid
+            })
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(result) {
+            if (result.success) {
+                // Update button to show it's not in wishlist
+                button.innerHTML = '<i class="far fa-heart"></i> Add to Wishlist';
+                button.classList.remove('btn-danger');
+                button.classList.add('btn-outline-danger');
+                button.onclick = function() { addToWishlist(skinUuid, skinName); };
+                
+                showNotification('success', result.message || 'Removed from wishlist!');
+            } else {
+                throw new Error(result.error || 'Failed to remove from wishlist');
+            }
+        })
+        .catch(function(error) {
+            console.error('Error removing from wishlist:', error);
+            showNotification('error', error.message || 'Failed to remove from wishlist');
+            
+            // Reset button
+            button.disabled = false;
+            button.innerHTML = originalContent;
+        });
+    };
+
+    // Enhanced refresh store functionality with loading overlay
+    window.refreshStore = function() {
+        const button = event.target.closest('button') || document.querySelector('.refresh-store');
+        if (!button) return;
+        
+        // Create enhanced loading overlay
+        const loadingOverlay = document.createElement('div');
+        loadingOverlay.className = 'store-loading-overlay';
+        loadingOverlay.innerHTML = `
+            <div class="loading-content">
+                <div class="loading-spinner">
+                    <i class="fas fa-store"></i>
+                </div>
+                <h3>Refreshing Store...</h3>
+                <p>Getting the latest Valorant store data</p>
+            </div>
+        `;
+        document.body.appendChild(loadingOverlay);
+        
+        const originalContent = button.innerHTML;
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+        
+        fetch('/api/store/refresh', {
+            method: 'POST'
+        })
+        .then(function(response) {
+            if (response.ok) {
+                showNotification('success', 'Store refreshed successfully!');
+                setTimeout(function() {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                throw new Error('Failed to refresh store');
+            }
+        })
+        .catch(function(error) {
+            console.error('Error refreshing store:', error);
+            showNotification('error', 'Failed to refresh store');
+            
+            // Reset button and remove overlay
+            button.disabled = false;
+            button.innerHTML = originalContent;
+            if (loadingOverlay.parentNode) {
+                loadingOverlay.remove();
+            }
+        });
+    };
+
+    // Show notifications
+    function showNotification(type, message) {
+        // Remove existing notifications
+        const existingNotifications = document.querySelectorAll('.store-notification');
+        existingNotifications.forEach(function(notification) {
+            notification.remove();
+        });
+
+        // Create new notification
+        const notification = document.createElement('div');
+        notification.className = 'store-notification alert alert-' + (type === 'success' ? 'success' : 'danger') + ' alert-dismissible fade show position-fixed';
+        notification.style.top = '20px';
+        notification.style.right = '20px';
+        notification.style.zIndex = '9999';
+        notification.style.minWidth = '300px';
+        notification.innerHTML = 
+            '<i class="fas fa-' + (type === 'success' ? 'check-circle' : 'exclamation-circle') + ' me-2"></i>' +
+            '<strong>' + message + '</strong>' +
+            '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+        
+        document.body.appendChild(notification);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(function() {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+
+    // Initialize skin images on page load with enhanced animation
+    document.querySelectorAll('.skin-image[data-skin-uuid]').forEach(function(img) {
+        const skinUuid = img.getAttribute('data-skin-uuid');
+        const skinName = img.getAttribute('data-skin-name');
+        if (skinUuid && skinName) {
+            loadSkinImage(img, skinUuid, skinName);
+        }
+    });
+    
+    // Enhanced scroll animation for store cards
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const cardObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                entry.target.setAttribute('data-scroll', 'visible');
+                // Add staggered animation delay
+                const cards = Array.from(document.querySelectorAll('.store-card'));
+                const index = cards.indexOf(entry.target);
+                entry.target.style.transitionDelay = `${index * 0.1}s`;
+            }
+        });
+    }, observerOptions);
+    
+    // Setup enhanced store card animations
+    document.querySelectorAll('.store-card').forEach(function(card, index) {
+        card.setAttribute('data-scroll', 'hidden');
+        card.style.transitionDelay = `${index * 0.1}s`;
+        cardObserver.observe(card);
+        
+        // Add enhanced hover effects
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+    
+    // Store filter functionality
+    document.querySelectorAll('.filter-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const filter = this.getAttribute('data-filter');
+            
+            // Update active filter
+            document.querySelectorAll('.filter-btn').forEach(function(b) {
+                b.classList.remove('active');
+            });
+            this.classList.add('active');
+            
+            // Filter store cards
+            document.querySelectorAll('.store-card').forEach(function(card) {
+                let show = true;
+                
+                switch(filter) {
+                    case 'wishlist':
+                        show = card.classList.contains('in-wishlist');
+                        break;
+                    case 'premium':
+                        show = card.classList.contains('premium');
+                        break;
+                    case 'budget':
+                        const priceElement = card.querySelector('.store-skin-price');
+                        if (priceElement) {
+                            const price = parseInt(priceElement.textContent.match(/\d+/)[0]);
+                            show = price <= 1275;
+                        }
+                        break;
+                    case 'all':
+                    default:
+                        show = true;
+                        break;
+                }
+                
+                if (show) {
+                    card.style.display = 'flex';
+                    card.style.opacity = '1';
+                    card.style.transform = 'scale(1)';
+                } else {
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.8)';
+                    setTimeout(function() {
+                        if (card.style.opacity === '0') {
+                            card.style.display = 'none';
+                        }
+                    }, 300);
+                }
+            });
+            
+            // Re-trigger scroll animations for visible cards
+            setTimeout(function() {
+                document.querySelectorAll('.store-card[style*="flex"]').forEach(function(card, index) {
+                    card.style.transitionDelay = `${index * 0.1}s`;
+                    card.setAttribute('data-scroll', 'visible');
+                });
+            }, 350);
+        });
+    });
+});

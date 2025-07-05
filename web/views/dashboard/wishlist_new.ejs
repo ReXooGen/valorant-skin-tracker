@@ -1,0 +1,380 @@
+<div class="dashboard-header"></div>
+    <h1><%= t('wishlist.title') %></h1>
+    <p class="subtitle"><%= t('wishlist.subtitle') %></p>
+</div>
+
+<div class="wishlist-tabs">
+    <button class="tab-button active" data-tab="skins">
+        <i class="fas fa-gun"></i> <%- t('wishlist.skins') %>
+    </button>
+    <button class="tab-button" data-tab="bundles">
+        <i class="fas fa-box"></i> <%- t('wishlist.bundles') %>
+    </button>
+</div>
+
+<div class="tab-content active" id="skins-tab">
+    <% if (skinWishlist && skinWishlist.length > 0) { %>
+        <div class="wishlist-grid">
+            <% for (let i = 0; i < skinWishlist.length; i++) { 
+                const item = skinWishlist[i];
+                let weaponIcon = 'fas fa-crosshairs';
+                let weaponColor = '#ff4655';
+                let weaponType = 'Unknown';
+                const skinName = item.skin_name || '';
+                
+                if (skinName.toLowerCase().includes('phantom')) {
+                    weaponIcon = 'fas fa-crosshairs';
+                    weaponColor = '#ff4655';
+                    weaponType = 'Phantom';
+                } else if (skinName.toLowerCase().includes('vandal')) {
+                    weaponIcon = 'fas fa-fire';
+                    weaponColor = '#389df1';
+                    weaponType = 'Vandal';
+                } else if (skinName.toLowerCase().includes('operator')) {
+                    weaponIcon = 'fas fa-crosshairs';
+                    weaponColor = '#ff9500';
+                    weaponType = 'Operator';
+                } else if (skinName.toLowerCase().includes('marshal')) {
+                    weaponIcon = 'fas fa-bullseye';
+                    weaponColor = '#00ff88';
+                    weaponType = 'Marshal';
+                } else if (skinName.toLowerCase().includes('knife') || 
+                          skinName.toLowerCase().includes('karambit') || 
+                          skinName.toLowerCase().includes('butterfly')) {
+                    weaponIcon = 'fas fa-cut';
+                    weaponColor = '#ff0066';
+                    weaponType = 'Melee';
+                } else if (skinName.toLowerCase().includes('sheriff')) {
+                    weaponIcon = 'fas fa-crosshairs';
+                    weaponColor = '#ffaa00';
+                    weaponType = 'Sheriff';
+                } else if (skinName.toLowerCase().includes('guardian')) {
+                    weaponIcon = 'fas fa-bullseye';
+                    weaponColor = '#00aaff';
+                    weaponType = 'Guardian';
+                }
+            %>
+                <div class="wishlist-card <%= item.inStore ? 'in-store' : '' %>">
+                    <div class="wishlist-image">
+                        <% if (item.skin_uuid) { %>
+                            <img 
+                                class="skin-image" 
+                                src="https://media.valorant-api.com/weaponskins/<%= item.skin_uuid %>/displayicon.png" 
+                                alt="<%= item.skin_name %>"
+                                onerror="this.onerror=null; this.src='https://media.valorant-api.com/weaponskinlevels/<%= item.skin_uuid %>/displayicon.png'; this.onerror=function(){this.src='https://media.valorant-api.com/weaponskins/<%= item.skin_uuid %>/chromas/standard/fullrender.png'; this.onerror=function(){this.style.display='none'; this.nextElementSibling.style.display='block';}};"
+                                onload="this.nextElementSibling.style.display='none';"
+                            />
+                        <% } %>
+                        <div class="skin-image-placeholder wishlist-placeholder" <% if (item.skin_uuid) { %>style="display: none;"<% } %>>
+                            <div class="weapon-icon-container">
+                                <i class="<%= weaponIcon %> weapon-icon" style="color: <%= weaponColor %>;"></i>
+                            </div>
+                            <div class="skin-overlay">
+                                <% if (item.inStore) { %>
+                                    <div class="store-indicator">
+                                        <i class="fas fa-store"></i>
+                                        <span>Available</span>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wishlist-info">
+                        <h3 class="wishlist-name" title="<%= item.skin_name %>"><%= item.skin_name %></h3>
+                        <p class="wishlist-weapon">
+                            <i class="<%= weaponIcon %>" style="color: <%= weaponColor %>;"></i> 
+                            <%= weaponType %>
+                        </p>
+                        <div class="wishlist-status">
+                            <% if (item.inStore) { %>
+                                <span class="status-badge available">
+                                    <i class="fas fa-check-circle"></i> Available in Store
+                                </span>
+                                <% if (item.currentPrice) { %>
+                                    <div class="current-price">
+                                        <span class="price"><%= item.currentPrice %> VP</span>
+                                    </div>
+                                <% } %>
+                            <% } else { %>
+                                <span class="status-badge waiting">
+                                    <i class="fas fa-clock"></i> Waiting
+                                </span>
+                            <% } %>
+                        </div>
+                        <div class="wishlist-meta">
+                            <small class="added-date">
+                                <i class="fas fa-calendar-plus"></i>
+                                Added: <%= new Date(item.added_at).toLocaleDateString() %>
+                            </small>
+                            <% if (item.priority > 1) { %>
+                                <div class="priority-indicator">
+                                    <i class="fas fa-star"></i>
+                                    Priority: <%= item.priority %>
+                                </div>
+                            <% } %>
+                        </div>
+                        <div class="wishlist-actions">
+                            <% if (item.inStore) { %>
+                                <button class="btn btn-success btn-sm" onclick="window.location.href='/dashboard/store'">
+                                    <i class="fas fa-shopping-cart"></i> View in Store
+                                </button>
+                            <% } %>
+                            <button class="btn btn-danger btn-sm remove-wishlist" data-skin-uuid="<%= item.skin_uuid %>">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    <% } else { %>
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-heart-broken"></i>
+            </div>
+            <h3>Your wishlist is empty</h3>
+            <p>Add your favorite skins to track when they become available in the store.</p>
+            <a href="/dashboard/store" class="btn btn-primary">
+                <i class="fas fa-store"></i> Browse Store
+            </a>
+        </div>
+    <% } %>
+</div>
+
+<div class="tab-content" id="bundles-tab">
+    <% if (bundleWishlist && bundleWishlist.length > 0) { %>
+        <div class="wishlist-grid">
+            <% for (let i = 0; i < bundleWishlist.length; i++) { 
+                const item = bundleWishlist[i];
+            %>
+                <div class="wishlist-card bundle-card">
+                    <div class="wishlist-image">
+                        <div class="skin-image-placeholder bundle-placeholder">
+                            <div class="bundle-icon-container">
+                                <i class="fas fa-box weapon-icon" style="color: #389df1;"></i>
+                            </div>
+                            <div class="bundle-overlay">
+                                <span class="bundle-label">Bundle</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wishlist-info">
+                        <h3 class="wishlist-name" title="<%= item.bundle_name || item.displayName %>">
+                            <%= item.bundle_name || item.displayName %>
+                        </h3>
+                        <p class="wishlist-weapon">
+                            <i class="fas fa-box" style="color: #389df1;"></i> Bundle
+                        </p>
+                        <div class="wishlist-status">
+                            <% if (item.isInStore) { %>
+                                <span class="status-badge available">
+                                    <i class="fas fa-check-circle"></i> Available in Store
+                                </span>
+                                <div class="current-price">
+                                    <span class="price"><%= item.currentPrice %> VP</span>
+                                    <% if (item.discountPercent > 0) { %>
+                                        <span class="discount">-<%= item.discountPercent %>%</span>
+                                    <% } %>
+                                </div>
+                            <% } else { %>
+                                <span class="status-badge waiting">
+                                    <i class="fas fa-clock"></i> Waiting
+                                </span>
+                            <% } %>
+                        </div>
+                        <div class="wishlist-meta">
+                            <small class="added-date">
+                                <i class="fas fa-calendar-plus"></i>
+                                Added: <%= new Date(item.added_at).toLocaleDateString() %>
+                            </small>
+                        </div>
+                        <div class="wishlist-actions">
+                            <button class="btn btn-danger btn-sm remove-bundle-wishlist" data-bundle-uuid="<%= item.bundle_uuid %>">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    <% } else { %>
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-box"></i>
+            </div>
+            <h3>No bundles in wishlist</h3>
+            <p>Add bundles to track when they become available.</p>
+            <a href="/dashboard/store" class="btn btn-primary">
+                <i class="fas fa-store"></i> Browse Store
+            </a>
+        </div>
+    <% } %>
+</div>
+
+<!-- JavaScript moved to separate script block to avoid EJS issues -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching functionality
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            const tabId = this.dataset.tab;
+            
+            // Remove active from all tabs and content
+            tabButtons.forEach(function(b) { 
+                b.classList.remove('active'); 
+            });
+            document.querySelectorAll('.tab-content').forEach(function(c) { 
+                c.classList.remove('active'); 
+            });
+            
+            // Add active to clicked tab and corresponding content
+            this.classList.add('active');
+            document.getElementById(tabId + '-tab').classList.add('active');
+        });
+    });
+
+    // Remove from wishlist functionality
+    const removeButtons = document.querySelectorAll('.remove-wishlist');
+    removeButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            const skinUuid = this.dataset.skinUuid;
+            
+            if (!confirm('Are you sure you want to remove this skin from your wishlist?')) {
+                return;
+            }
+            
+            // Disable button and show loading
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Removing...';
+            
+            fetch('/api/wishlist/remove', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    skin_uuid: skinUuid
+                })
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(result) {
+                if (result.success) {
+                    // Remove the card with animation
+                    const card = button.closest('.wishlist-card');
+                    card.style.transition = 'all 0.3s ease';
+                    card.style.transform = 'scale(0.8)';
+                    card.style.opacity = '0';
+                    
+                    setTimeout(function() {
+                        card.remove();
+                        
+                        // Check if wishlist is now empty
+                        if (document.querySelectorAll('#skins-tab .wishlist-card').length === 0) {
+                            location.reload();
+                        }
+                    }, 300);
+                } else {
+                    throw new Error(result.error || 'Failed to remove from wishlist');
+                }
+            })
+            .catch(function(error) {
+                console.error('Error removing from wishlist:', error);
+                alert('Failed to remove from wishlist: ' + error.message);
+                
+                // Reset button
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-trash"></i> Remove';
+            });
+        });
+    });
+
+    // Remove bundle from wishlist functionality
+    const removeBundleButtons = document.querySelectorAll('.remove-bundle-wishlist');
+    removeBundleButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            const bundleUuid = this.dataset.bundleUuid;
+            
+            if (!confirm('Are you sure you want to remove this bundle from your wishlist?')) {
+                return;
+            }
+            
+            // Disable button and show loading
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Removing...';
+            
+            fetch('/api/bundles/wishlist/remove', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    bundle_uuid: bundleUuid
+                })
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(result) {
+                if (result.success) {
+                    // Remove the card with animation
+                    const card = button.closest('.wishlist-card');
+                    card.style.transition = 'all 0.3s ease';
+                    card.style.transform = 'scale(0.8)';
+                    card.style.opacity = '0';
+                    
+                    setTimeout(function() {
+                        card.remove();
+                        
+                        // Check if bundle wishlist is now empty
+                        if (document.querySelectorAll('#bundles-tab .wishlist-card').length === 0) {
+                            location.reload();
+                        }
+                    }, 300);
+                } else {
+                    throw new Error(result.error || 'Failed to remove bundle from wishlist');
+                }
+            })
+            .catch(function(error) {
+                console.error('Error removing bundle from wishlist:', error);
+                alert('Failed to remove bundle from wishlist: ' + error.message);
+                
+                // Reset button
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-trash"></i> Remove';
+            });
+        });
+    });
+
+    // Auto-refresh notification for in-store items
+    const inStoreCards = document.querySelectorAll('.wishlist-card.in-store');
+    if (inStoreCards.length > 0) {
+        // Show notification that items are available
+        setTimeout(function() {
+            const notification = document.createElement('div');
+            notification.className = 'alert alert-success alert-dismissible fade show position-fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '9999';
+            notification.style.minWidth = '300px';
+            notification.innerHTML = 
+                '<i class="fas fa-heart text-danger me-2"></i>' +
+                '<strong>Wishlist items available!</strong>' +
+                '<div class="mt-1">' +
+                    '<small>' + inStoreCards.length + ' item(s) from your wishlist are currently in the store.</small>' +
+                '</div>' +
+                '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+            document.body.appendChild(notification);
+            
+            // Auto-remove after 10 seconds
+            setTimeout(function() {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 10000);
+        }, 1000);
+    }
+});
+</script>

@@ -1,0 +1,240 @@
+{
+  "common": {
+    "yes": "Yes",
+    "no": "No",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Information"
+  },
+  "dashboard": {
+    "title": "Valorant Skin Tracker Dashboard",
+    "welcome": "Welcome to Valorant Skin Tracker",
+    "description": "Manage your Valorant skin wishlist and track skin prices",
+    "tokenRequired": {
+      "title": "Token Setup Required",
+      "description": "You need to set up your Riot account tokens to access the store and use all features.",
+      "autoSetup": "Auto Setup (Recommended)",
+      "manualSetup": "Manual Setup"
+    },
+    "setupSuccess": {
+      "auto": "🎉 Tokens successfully set up using Auto Token Fetcher! You can now access your Valorant store and use all features.",
+      "manual": "🎉 Tokens successfully set up manually! You can now access your Valorant store and use all features.",
+      "ready": "Your account is now ready. You can:",
+      "viewStore": "View your current Valorant store",
+      "addWishlist": "Add skins to your wishlist",
+      "checkAnalytics": "Check price analytics and trends"
+    },
+    "menu": {
+      "dashboard": "Dashboard",
+      "store": "Store",
+      "wishlist": "Wishlist",
+      "analytics": "Analytics",
+      "settings": "Settings",
+      "logout": "Logout"
+    }
+  },
+  "store": {
+    "title": "Store",
+    "subtitle": "Current Valorant Store Items",
+    "noData": "No store data available",
+    "refreshStore": "Refresh the store to see current items",
+    "viewHistory": "View Price History"
+  },
+  "wishlist": {
+    "title": "Wishlist",
+    "subtitle": "Track your favorite skins and bundles",
+    "skins": "Skins",
+    "bundles": "Bundles",
+    "empty": "Your wishlist is empty",
+    "emptyDesc": "Add skins from the store to track when they become available",
+    "noBundles": "No bundles in wishlist",
+    "noBundlesDesc": "Add bundles to track when they're available in the store",
+    "browseStore": "Browse Store",
+    "available": "Available Now",
+    "waiting": "Waiting",
+    "lastPrice": "Last seen price",
+    "buyNow": "Available in Store",
+    "remove": "Remove",
+    "add": "Add to Wishlist",
+    "added": "Added!",
+    "confirmRemove": "Are you sure you want to remove this item from your wishlist?"
+  },
+  "bundles": {
+    "title": "Bundles",
+    "description": "Check out the latest weapon bundles",
+    "expires": "Expires",
+    "items": "Items",
+    "addToWishlist": "Add Bundle to Wishlist",
+    "viewDetails": "View Details"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "subtitle": "Statistics and insights about your Valorant store activity",
+    "userStats": "Your Statistics",
+    "globalStats": "Global Statistics",
+    "wishlistItems": "Wishlist Items",
+    "bundleWishlistItems": "Bundle Wishlist Items",
+    "storeChecks": "Store Checks",
+    "notificationsReceived": "Notifications Received",
+    "totalUsers": "Total Users",
+    "totalWishlistItems": "Total Wishlist Items",
+    "totalStoreChecks": "Total Store Checks",
+    "totalNotifications": "Total Notifications",
+    "topWishlistSkins": "Most Wanted Skins",
+    "users": "users",
+    "priceTrends": "Price Trends",
+    "averagePrice": "Average Price",
+    "recentActivity": "Recent Activity",
+    "noData": "No data available",
+    "noActivity": "No recent activity",
+    "noPriceData": "No price data available"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "username": "Username",
+    "password": "Password",
+    "email": "Email",
+    "discordId": "Discord ID",
+    "loginSuccess": "Login successful",
+    "loginError": "Login failed",
+    "loginRequired": "Please log in to access this feature",
+    "registerSuccess": "Registration successful",
+    "registerError": "Registration failed"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Customize your Valorant Skin Tracker experience",
+    "language": "Language",
+    "selectLanguage": "Select Language",
+    "notifications": "Notifications",
+    "enableNotifications": "Enable Notifications",
+    "enableAutoCheck": "Enable Auto Store Check",
+    "bundleNotifications": "Bundle Notifications",
+    "timing": "Timing",
+    "dailyCheckTime": "Daily Check Time",
+    "timezone": "Timezone",
+    "account": "Account",
+    "riotUsername": "Riot Username",
+    "riotUsernamePlaceholder": "Enter your Riot username",
+    "updateTokens": "Update Riot Tokens",
+    "updateTokensHelp": "Click to refresh your authentication tokens",
+    "manualSetup": "Manual Token Setup",
+    "autoTokenFetcher": "Auto Token Fetcher",
+    "autoTokenFetcherDesc": "Want an easier way? Try the auto token fetcher:",
+    "dangerZone": "Danger Zone",
+    "clearWishlist": "Clear Wishlist",
+    "clearWishlistHelp": "Remove all items from your wishlist",
+    "clearAllData": "Clear All Data",
+    "clearAllDataHelp": "Delete all your data including tokens and settings",
+    "saveSettings": "Save Settings",
+    "resetSettings": "Reset",
+    "saveSuccess": "Settings saved successfully!",
+    "saveError": "Failed to save settings",
+    "confirmClearWishlist": "Are you sure you want to clear your entire wishlist?",
+    "confirmClearAllData": "Are you sure you want to delete ALL your data? This cannot be undone!",
+    "confirmReset": "Are you sure you want to reset all settings?",
+    "clearSuccess": "Data cleared successfully",
+    "clearError": "Failed to clear data"
+  },
+  "notifications": {
+    "skinInStore": "Wishlist skin is available in store!",
+    "priceAlert": "Price alert for skin",
+    "newBundle": "New bundle available",
+    "tokenExpiring": "Token expiring soon"
+  },
+  "nightmarket": {
+    "title": "Night Market",
+    "description": "Special discounted skins available for limited time",
+    "discount": "Discount",
+    "originalPrice": "Original Price",
+    "discountedPrice": "Discounted Price",
+    "timeRemaining": "Time Remaining",
+    "notActive": "Night Market is not currently active"
+  },
+  "tokenCli": {
+    "title": "Auto Token Fetcher",
+    "subtitle": "Automatically fetch tokens using browser cookies",
+    "advantages": {
+      "title": "Auto Token Fetcher Advantages:",
+      "easier": "Easier - only need 2 cookies from browser",
+      "faster": "Faster - no manual copy/paste of multiple tokens",
+      "safer": "Safer - cookies expire naturally"
+    },
+    "instructions": {
+      "title": "How to Get Browser Cookies:",
+      "step1": "Open your browser and go to",
+      "step2": "Make sure you're logged in to your Riot Games account",
+      "step3": "Press",
+      "step3b": "to open Developer Tools",
+      "step4": "Go to",
+      "step5": "Find and copy the values for",
+      "step5b": "and",
+      "step5c": "cookies",
+      "ssidCookie": "ssid cookie (long string)",
+      "clidCookie": "clid cookie (shorter string)"
+    },
+    "security": {
+      "title": "Security:",
+      "description": "Cookies are only used once to fetch tokens and are not stored. Tokens are stored securely to access your Valorant store."
+    },
+    "form": {
+      "ssidLabel": "SSID Cookie",
+      "ssidPlaceholder": "Paste ssid cookie value here...",
+      "ssidHelp": "Session ID cookie from auth.riotgames.com",
+      "clidLabel": "CLID Cookie",
+      "clidPlaceholder": "Paste clid cookie value here...",
+      "clidHelp": "Client ID cookie from auth.riotgames.com",
+      "regionLabel": "Region",
+      "regionPlaceholder": "Select Region",
+      "submitButton": "Fetch Tokens Automatically"
+    },
+    "success": "Tokens successfully fetched and saved! You can now use all bot features.",
+    "errors": {
+      "missingFields": "Please fill in all required fields.",
+      "invalidSsid": "Invalid ssid cookie. Make sure you copied the complete ssid cookie value.",
+      "invalidClid": "Invalid clid cookie. Make sure you copied the complete clid cookie value.",
+      "authFailed": "Authentication failed. Your cookies may be expired or invalid. Please get fresh cookies from your browser.",
+      "invalidCookies": "Invalid or expired cookies. Please log in again in your browser and get fresh cookies.",
+      "fetchFailed": "Failed to fetch tokens. Please try again or use manual setup method.",
+      "ssidRequired": "Please enter ssid cookie.",
+      "ssidTooShort": "SSID cookie too short. Make sure you copied the complete value.",
+      "clidRequired": "Please enter clid cookie.",
+      "clidTooShort": "CLID cookie too short. Make sure you copied the complete value.",
+      "regionRequired": "Please select a region."
+    },
+    "alternatives": {
+      "title": "Having trouble? Try alternative method:",
+      "manualSetup": "Manual Setup"
+    },
+    "navigation": {
+      "backToDashboard": "Back to Dashboard"
+    }
+  },
+  "error": {
+    "404": {
+      "title": "Page Not Found",
+      "message": "The page you are looking for does not exist."
+    },
+    "500": {
+      "title": "Server Error",
+      "message": "An internal server error occurred."
+    },
+    "unauthorized": "Unauthorized",
+    "forbidden": "Forbidden",
+    "tokenExpired": "Token has expired",
+    "invalidToken": "Invalid token",
+    "tokenCli": {
+      "noTokens": "You need to set up your Riot tokens first to access the store.",
+      "tokenCheckFailed": "Unable to verify your tokens. Please try setting them up again."
+    }
+  }
+}

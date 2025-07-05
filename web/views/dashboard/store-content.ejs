@@ -1,0 +1,266 @@
+<div class="dashboard-header mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="h2 mb-1">
+                <i class="fas fa-store me-2 text-primary"></i>
+                <%= title %>
+            </h1>
+            <p class="text-muted mb-0">Current Valorant Store Items</p>
+        </div>
+        <div class="btn-toolbar">
+            <button type="button" class="btn btn-primary refresh-store" onclick="refreshStore()">
+                <i class="fas fa-sync me-2"></i>
+                Refresh Store
+            </button>
+        </div>
+    </div>
+</div>
+
+<% if (lastUpdate) { %>
+    <div class="alert alert-info mb-4 border-0" style="background: rgba(13, 202, 240, 0.1); border-left: 4px solid #0dcaf0 !important;">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-clock me-2 text-info"></i>
+            <span class="text-info">
+                <% if (lang === 'id') { %>
+                    Terakhir diperbarui: <%= new Date(lastUpdate).toLocaleString('id-ID') %>
+                <% } else { %>
+                    Last updated: <%= new Date(lastUpdate).toLocaleString() %>
+                <% } %>
+            </span>
+        </div>
+    </div>
+<% } %>
+
+<!-- Store Grid Container -->
+<div class="store-grid-container">
+    <% if (store && store.length > 0) { %>
+        <!-- Optional Store Stats (if data available) -->
+        <div class="store-stats">
+            <div class="store-stat">
+                <div class="store-stat-value"><%= store.length %></div>
+                <div class="store-stat-label">Total Skins</div>
+            </div>
+            <div class="store-stat">
+                <div class="store-stat-value"><%= Math.round(store.reduce((sum, skin) => sum + skin.price, 0) / store.length) %></div>
+                <div class="store-stat-label">Avg Price</div>
+            </div>
+            <div class="store-stat">
+                <div class="store-stat-value"><%= Math.max(...store.map(skin => skin.price)) %></div>
+                <div class="store-stat-label">Highest</div>
+            </div>
+            <div class="store-stat">
+                <div class="store-stat-value"><%= store.filter(skin => skin.inWishlist).length %></div>
+                <div class="store-stat-label">In Wishlist</div>
+            </div>
+        </div>
+
+        <!-- Optional Store Filters -->
+        <% if (store && store.length > 3) { %>
+            <div class="store-filters">
+                <div class="filter-btn active" data-filter="all">All Skins</div>
+                <div class="filter-btn" data-filter="wishlist">In Wishlist</div>
+                <div class="filter-btn" data-filter="premium">Premium</div>
+                <div class="filter-btn" data-filter="budget">Budget</div>
+            </div>
+        <% } %>
+
+        <div class="store-grid">
+            <% store.forEach(function(skin, index) { %>
+            <div class="store-card <%= skin.inWishlist ? 'in-wishlist' : '' %> ">
+                <!-- Skin Image Section -->
+                <div class="store-image-container">
+                    <% if (skin.skin_uuid) { %>
+                        <img 
+                            class="store-skin-image" 
+                            src="https://media.valorant-api.com/weaponskins/<%= skin.skin_uuid %>/displayicon.png"
+                            data-skin-uuid="<%= skin.skin_uuid %>"
+                            data-skin-name="<%= skin.skin_name %>"
+                            alt="<%= skin.skin_name %>"
+                            style="display: none;"
+                            onload="this.style.display='block'; this.parentElement.querySelector('.image-placeholder').style.display='none';"
+                            onerror="this.style.display='none'; this.parentElement.querySelector('.image-placeholder').style.display='flex';"
+                        />
+                    <% } %>
+                    
+                    <!-- Enhanced placeholder for failed images -->
+                    <div class="image-placeholder">
+                        <div class="text-center">
+                            <% 
+                            let weaponIcon = 'crosshairs';
+                            let weaponColor = '#ff4655';
+                            let weaponType = 'Weapon';
+                            if (skin.skin_name) {
+                                const name = skin.skin_name.toLowerCase();
+                                if (name.includes('phantom')) {
+                                    weaponIcon = 'crosshairs';
+                                    weaponColor = '#ff4655';
+                                    weaponType = 'Phantom';
+                                } else if (name.includes('vandal')) {
+                                    weaponIcon = 'fire';
+                                    weaponColor = '#389df1';
+                                    weaponType = 'Vandal';
+                                } else if (name.includes('operator')) {
+                                    weaponIcon = 'crosshairs';
+                                    weaponColor = '#ff9500';
+                                    weaponType = 'Operator';
+                                } else if (name.includes('sheriff')) {
+                                    weaponIcon = 'dot-circle';
+                                    weaponColor = '#ffaa00';
+                                    weaponType = 'Sheriff';
+                                } else if (name.includes('knife') || name.includes('melee') || name.includes('karambit') || name.includes('butterfly')) {
+                                    weaponIcon = 'cut';
+                                    weaponColor = '#ff0066';
+                                    weaponType = 'Melee';
+                                } else if (name.includes('guardian')) {
+                                    weaponIcon = 'bullseye';
+                                    weaponColor = '#00aaff';
+                                    weaponType = 'Guardian';
+                                } else if (name.includes('marshal')) {
+                                    weaponIcon = 'bullseye';
+                                    weaponColor = '#00ff88';
+                                    weaponType = 'Marshal';
+                                } else {
+                                    weaponIcon = 'crosshairs';
+                                    weaponColor = '#ff4655';
+                                    weaponType = 'Unknown';
+                                }
+                            }
+                            %>
+                            <i class="fas fa-<%= weaponIcon %>" style="color: <%= weaponColor %>; font-size: 4rem; margin-bottom: 1rem;"></i>
+                            <p class="mb-0" style="color: #888; font-size: 1.1rem; font-weight: 600;"><%= weaponType %></p>
+                        </div>
+                    </div>
+                    
+                    <!-- Wishlist Badge -->
+                    <% if (skin.inWishlist) { %>
+                        <div class="wishlist-badge">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                    <% } %>
+                    
+                    <!-- Enhanced Rarity Badge -->
+                    <% 
+                    let rarity = 'Common';
+                    let rarityClass = 'common';
+                    if (skin.price >= 2675) {
+                        rarity = 'Exclusive';
+                        rarityClass = 'legendary'; // Use legendary styling for exclusive
+                    } else if (skin.price >= 2175) {
+                        rarity = 'Ultra';
+                        rarityClass = 'legendary';
+                    } else if (skin.price >= 1775) {
+                        rarity = 'Premium';
+                        rarityClass = 'epic';
+                    } else if (skin.price >= 1275) {
+                        rarity = 'Deluxe';
+                        rarityClass = 'rare';
+                    } else {
+                        rarity = 'Select';
+                        rarityClass = 'common';
+                    }
+                    %>
+                    <div class="rarity-badge <%= rarityClass %>" title="<%= rarity %> - <%= skin.price %> VP">
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                
+                <!-- Enhanced Skin Info Section -->
+                <div class="store-card-body">
+                    <h5 class="store-skin-name" title="<%= skin.skin_name %>">
+                        <%= skin.skin_name %>
+                    </h5>
+                    
+                    <div class="store-skin-price <%= skin.price < 1000 ? 'discount' : '' %>">
+                        <i class="fas fa-coins"></i>
+                        <%= skin.price %> VP
+                    </div>
+                    
+                    <!-- Enhanced Action Buttons -->
+                    <div class="store-card-actions">
+                        <% if (skin.inWishlist) { %>
+                            <button class="btn btn-danger" onclick="removeFromWishlist('<%= skin.skin_uuid %>', '<%= skin.skin_name %>')">
+                                <i class="fas fa-heart me-2"></i> In Wishlist
+                            </button>
+                        <% } else { %>
+                            <button class="btn btn-outline-danger" onclick="addToWishlist('<%= skin.skin_uuid %>', '<%= skin.skin_name %>')">
+                                <i class="far fa-heart me-2"></i> Add to Wishlist
+                            </button>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Enhanced interaction layer -->
+                <div class="interaction-layer"></div>
+            </div>
+            <% }); %>
+        </div>
+    <% } else { %>
+        <div class="empty-store-state text-center py-5">
+            <div class="empty-state-icon mb-4">
+                <i class="fas fa-store fa-5x text-muted"></i>
+            </div>
+            <h3 class="text-muted mb-3">
+                <% if (lang === 'id') { %>
+                    Tidak ada data toko
+                <% } else { %>
+                    No store data available
+                <% } %>
+            </h3>
+            <p class="text-muted mb-4 mx-auto" style="max-width: 400px;">
+                <% if (lang === 'id') { %>
+                    Refresh toko untuk melihat skin hari ini atau setup token terlebih dahulu.
+                <% } else { %>
+                    Refresh the store to see today's skins or setup your tokens first.
+                <% } %>
+            </p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <button class="btn btn-primary btn-lg" onclick="refreshStore()">
+                    <i class="fas fa-sync me-2"></i>
+                    <% if (lang === 'id') { %>
+                        Refresh Store
+                    <% } else { %>
+                        Refresh Store
+                    <% } %>
+                </button>
+                <a href="/auth/token-cli" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-key me-2"></i>
+                    <% if (lang === 'id') { %>
+                        Setup Token
+                    <% } else { %>
+                        Setup Tokens
+                    <% } %>
+                </a>
+            </div>
+        </div>
+    <% } %>
+</div>
+
+<% if (bundles && bundles.length > 0) { %>
+    <div class="bundles-section">
+        <h2><%= t('bundles.title') %></h2>
+        <div class="bundles-grid">
+            <% bundles.forEach(bundle => { %>
+                <div class="bundle-card">
+                    <div class="bundle-image">
+                        <img src="<%= bundle.displayIcon %>" alt="<%= bundle.displayName %>" loading="lazy">
+                    </div>
+                    <div class="bundle-info">
+                        <h3 class="bundle-name"><%= bundle.displayName %></h3>
+                        <p class="bundle-description"><%= bundle.description %></p>
+                        <div class="bundle-price">
+                            <span class="price"><%= bundle.totalCost %> VP</span>
+                            <% if (bundle.discountPercent > 0) { %>
+                                <span class="discount">-<%= bundle.discountPercent %>%</span>
+                            <% } %>
+                        </div>
+                        <div class="bundle-actions">
+                            <button class="btn btn-primary add-bundle-wishlist" data-bundle-id="<%= bundle.uuid %>">
+                                <%= t('bundles.addToWishlist') %>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+<% } %>

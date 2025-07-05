@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Valorant Skin Tracker</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --valorant-red: #ff4655;
+            --valorant-dark: #0f1419;
+            --bg-dark: #1a1a1a;
+            --bg-darker: #0d1117;
+            --text-light: #f0f6fc;
+            --border-color: #30363d;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
+            color: var(--text-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        .setup-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: rgba(26, 26, 26, 0.9);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-primary {
+            background: var(--valorant-red);
+            border-color: var(--valorant-red);
+        }
+
+        .btn-primary:hover {
+            background: #e63946;
+            border-color: #e63946;
+        }
+
+        .btn-secondary {
+            background: rgba(108, 117, 125, 0.8);
+            border-color: rgba(108, 117, 125, 0.8);
+        }
+
+        .form-control {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+        }
+
+        .form-control:focus {
+            background: rgba(26, 26, 26, 0.9);
+            border-color: var(--valorant-red);
+            color: var(--text-light);
+            box-shadow: 0 0 0 0.2rem rgba(255, 70, 85, 0.25);
+        }
+
+        .form-control::placeholder {
+            color: rgba(240, 246, 252, 0.6);
+        }
+
+        .alert {
+            border: none;
+            border-radius: 8px;
+        }
+
+        .alert-success {
+            background: rgba(25, 135, 84, 0.2);
+            color: #75b798;
+            border: 1px solid rgba(25, 135, 84, 0.3);
+        }
+
+        .alert-danger {
+            background: rgba(220, 53, 69, 0.2);
+            color: #ea868f;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .header-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header-logo h1 {
+            color: var(--valorant-red);
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .setup-steps {
+            background: rgba(13, 17, 23, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .step {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-number {
+            background: var(--valorant-red);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: -1.5rem;
+            margin-right: 0.5rem;
+        }
+
+        .warning-box {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .warning-box .fas {
+            color: #ffc107;
+            margin-right: 0.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .text-muted {
+            color: rgba(240, 246, 252, 0.7) !important;
+        }
+
+        .back-link {
+            color: var(--text-light);
+            text-decoration: none;
+            opacity: 0.8;
+        }
+
+        .back-link:hover {
+            color: var(--valorant-red);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="setup-container">
+            <div class="header-logo">
+                <h1><i class="fas fa-crosshairs"></i> Valorant Skin Tracker</h1>
+                <p class="text-muted">Token Setup</p>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <% if (success) { %>
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <% if (lang === 'id') { %>
+                                Token berhasil disimpan! Anda sekarang dapat menggunakan semua fitur bot.
+                            <% } else { %>
+                                Tokens saved successfully! You can now use all bot features.
+                            <% } %>
+                        </div>
+                    <% } %>
+
+                    <% if (error) { %>
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <% if (error === 'missing_fields') { %>
+                                <% if (lang === 'id') { %>
+                                    Harap isi semua field yang diperlukan.
+                                <% } else { %>
+                                    Please fill in all required fields.
+                                <% } %>
+                            <% } else if (error === 'invalid_tokens') { %>
+                                <% if (lang === 'id') { %>
+                                    Token tidak valid. Silakan periksa kembali token Anda.
+                                <% } else { %>
+                                    Invalid tokens. Please check your tokens and try again.
+                                <% } %>
+                            <% } else if (error === 'setup_failed') { %>
+                                <% if (lang === 'id') { %>
+                                    Setup gagal. Silakan coba lagi.
+                                <% } else { %>
+                                    Setup failed. Please try again.
+                                <% } %>
+                            <% } else { %>
+                                <% if (lang === 'id') { %>
+                                    Terjadi kesalahan. Silakan coba lagi.
+                                <% } else { %>
+                                    An error occurred. Please try again.
+                                <% } %>
+                            <% } %>
+                        </div>
+                    <% } %>
+
+                    <div class="warning-box">
+                        <i class="fas fa-shield-alt"></i>
+                        <strong>
+                            <% if (lang === 'id') { %>
+                                Keamanan Data
+                            <% } else { %>
+                                Data Security
+                            <% } %>
+                        </strong>
+                        <br>
+                        <% if (lang === 'id') { %>
+                            Token Anda disimpan dengan aman dan hanya digunakan untuk mengakses store Valorant Anda. Kami tidak menyimpan informasi login Riot Games Anda.
+                        <% } else { %>
+                            Your tokens are stored securely and only used to access your Valorant store. We do not store your Riot Games login information.
+                        <% } %>
+                    </div>
+
+                    <div class="setup-steps">
+                        <h5 class="mb-3">
+                            <% if (lang === 'id') { %>
+                                Cara Mendapatkan Token:
+                            <% } else { %>
+                                How to Get Your Tokens:
+                            <% } %>
+                        </h5>
+                        
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            <% if (lang === 'id') { %>
+                                Buka Valorant dan masuk ke akun Anda
+                            <% } else { %>
+                                Open Valorant and login to your account
+                            <% } %>
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            <% if (lang === 'id') { %>
+                                Gunakan alat ekstraksi token (seperti ValAuth atau ValorantClientAPI)
+                            <% } else { %>
+                                Use a token extraction tool (like ValAuth or ValorantClientAPI)
+                            <% } %>
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            <% if (lang === 'id') { %>
+                                Salin token yang diperlukan dan masukkan di form di bawah
+                            <% } else { %>
+                                Copy the required tokens and paste them in the form below
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <form method="POST" action="/auth/setup">
+                        <div class="mb-3">
+                            <label for="puuid" class="form-label">
+                                PUUID <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="puuid" name="puuid" required
+                                   placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+                            <div class="form-text text-muted">
+                                <% if (lang === 'id') { %>
+                                    ID unik untuk akun Valorant Anda
+                                <% } else { %>
+                                    Unique identifier for your Valorant account
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="access_token" class="form-label">
+                                Access Token <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" id="access_token" name="access_token" rows="3" required
+                                      placeholder="eyJ..."></textarea>
+                            <div class="form-text text-muted">
+                                <% if (lang === 'id') { %>
+                                    Token akses untuk autentikasi API
+                                <% } else { %>
+                                    Access token for API authentication
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="entitlement_token" class="form-label">
+                                Entitlement Token <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" id="entitlement_token" name="entitlement_token" rows="3" required
+                                      placeholder="eyJ..."></textarea>
+                            <div class="form-text text-muted">
+                                <% if (lang === 'id') { %>
+                                    Token entitlement untuk mengakses data game
+                                <% } else { %>
+                                    Entitlement token for accessing game data
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="region" class="form-label">
+                                <% if (lang === 'id') { %>Region<% } else { %>Region<% } %> <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-control" id="region" name="region" required>
+                                <option value="">
+                                    <% if (lang === 'id') { %>
+                                        Pilih Region
+                                    <% } else { %>
+                                        Select Region
+                                    <% } %>
+                                </option>
+                                <option value="na">North America (NA)</option>
+                                <option value="eu">Europe (EU)</option>
+                                <option value="ap">Asia Pacific (AP)</option>
+                                <option value="kr">Korea (KR)</option>
+                                <option value="latam">Latin America (LATAM)</option>
+                                <option value="br">Brazil (BR)</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>
+                                <% if (lang === 'id') { %>
+                                    Simpan Token
+                                <% } else { %>
+                                    Save Tokens
+                                <% } %>
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="alternatives">
+                        <p class="text-muted mb-2">
+                            <%= t('settings.autoTokenFetcherDesc') %>
+                        </p>
+                        <a href="/auth/token-cli" class="btn btn-success">
+                            <i class="fas fa-magic me-2"></i>
+                            <%= t('settings.autoTokenFetcher') %>
+                        </a>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <a href="/dashboard" class="back-link">
+                            <i class="fas fa-arrow-left me-1"></i>
+                            <%= t('tokenCli.navigation.backToDashboard') %>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-dismiss success alerts after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const successAlert = document.querySelector('.alert-success');
+            if (successAlert) {
+                setTimeout(() => {
+                    successAlert.style.opacity = '0';
+                    setTimeout(() => {
+                        successAlert.remove();
+                    }, 300);
+                }, 5000);
+            }
+        });
+
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const requiredFields = ['puuid', 'access_token', 'entitlement_token', 'region'];
+            let isValid = true;
+
+            requiredFields.forEach(field => {
+                const input = document.getElementById(field);
+                if (!input.value.trim()) {
+                    input.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    input.classList.remove('is-invalid');
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                alert('<% if (lang === "id") { %>Harap isi semua field yang diperlukan.<% } else { %>Please fill in all required fields.<% } %>');
+            }
+        });
+    </script>
+</body>
+</html>

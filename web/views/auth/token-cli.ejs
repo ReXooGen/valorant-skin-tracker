@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Valorant Skin Tracker</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --valorant-red: #ff4655;
+            --valorant-dark: #0f1419;
+            --bg-dark: #1a1a1a;
+            --bg-darker: #0d1117;
+            --text-light: #f0f6fc;
+            --border-color: #30363d;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
+            color: var(--text-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        .token-cli-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: rgba(26, 26, 26, 0.9);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-primary {
+            background: var(--valorant-red);
+            border-color: var(--valorant-red);
+        }
+
+        .btn-primary:hover {
+            background: #e63946;
+            border-color: #e63946;
+        }
+
+        .btn-secondary {
+            background: rgba(108, 117, 125, 0.8);
+            border-color: rgba(108, 117, 125, 0.8);
+        }
+
+        .form-control {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+        }
+
+        .form-control:focus {
+            background: rgba(26, 26, 26, 0.9);
+            border-color: var(--valorant-red);
+            color: var(--text-light);
+            box-shadow: 0 0 0 0.2rem rgba(255, 70, 85, 0.25);
+        }
+
+        .form-control::placeholder {
+            color: rgba(240, 246, 252, 0.6);
+        }
+
+        .alert {
+            border: none;
+            border-radius: 8px;
+        }
+
+        .alert-success {
+            background: rgba(25, 135, 84, 0.2);
+            color: #75b798;
+            border: 1px solid rgba(25, 135, 84, 0.3);
+        }
+
+        .alert-danger {
+            background: rgba(220, 53, 69, 0.2);
+            color: #ea868f;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .alert-warning {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffeb3b;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .header-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header-logo h1 {
+            color: var(--valorant-red);
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .instructions-box {
+            background: rgba(13, 17, 23, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .step {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-number {
+            background: var(--valorant-red);
+            color: white;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: -1.5rem;
+            margin-right: 0.75rem;
+        }
+
+        .advantages-box {
+            background: rgba(25, 135, 84, 0.1);
+            border: 1px solid rgba(25, 135, 84, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .advantages-box .fas {
+            color: #198754;
+            margin-right: 0.5rem;
+        }
+
+        .warning-box {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .warning-box .fas {
+            color: #ffc107;
+            margin-right: 0.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .text-muted {
+            color: rgba(240, 246, 252, 0.7) !important;
+        }
+
+        .back-link {
+            color: var(--text-light);
+            text-decoration: none;
+            opacity: 0.8;
+        }
+
+        .back-link:hover {
+            color: var(--valorant-red);
+            opacity: 1;
+        }
+
+        .loading-spinner {
+            display: none;
+        }
+
+        .loading .loading-spinner {
+            display: inline-block;
+        }
+
+        .loading .btn-text {
+            display: none;
+        }
+
+        .cookie-preview {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            word-break: break-all;
+        }
+
+        .alternatives {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="token-cli-container">
+            <div class="header-logo">
+                <h1><i class="fas fa-magic"></i> <%= t('tokenCli.title') %></h1>
+                <p class="text-muted">
+                    <%= t('tokenCli.subtitle') %>
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <% if (success) { %>
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <%= t('tokenCli.success') %>
+                        </div>
+                    <% } %>
+
+                    <% if (error) { %>
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <% if (error === 'missing_fields') { %>
+                                <%= t('tokenCli.errors.missingFields') %>
+                            <% } else if (error === 'invalid_ssid') { %>
+                                <%= t('tokenCli.errors.invalidSsid') %>
+                            <% } else if (error === 'invalid_clid') { %>
+                                <%= t('tokenCli.errors.invalidClid') %>
+                            <% } else if (error === 'auth_failed') { %>
+                                <%= t('tokenCli.errors.authFailed') %>
+                            <% } else if (error === 'invalid_cookies') { %>
+                                <%= t('tokenCli.errors.invalidCookies') %>
+                            <% } else { %>
+                                <%= t('tokenCli.errors.fetchFailed') %>
+                            <% } %>
+                        </div>
+                    <% } %>
+
+                    <div class="advantages-box">
+                        <i class="fas fa-bolt"></i>
+                        <strong>
+                            <%= t('tokenCli.advantages.title') %>
+                        </strong>
+                        <ul class="mt-2 mb-0">
+                            <li><%= t('tokenCli.advantages.easier') %></li>
+                            <li><%= t('tokenCli.advantages.faster') %></li>
+                            <li><%= t('tokenCli.advantages.safer') %></li>
+                        </ul>
+                    </div>
+
+                    <div class="warning-box">
+                        <i class="fas fa-shield-alt"></i>
+                        <strong>
+                            <%= t('tokenCli.security.title') %>
+                        </strong>
+                        <%= t('tokenCli.security.description') %>
+                    </div>
+
+                    <div class="instructions-box">
+                        <h5 class="mb-3">
+                            <%= t('tokenCli.instructions.title') %>
+                        </h5>
+                        
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            <%= t('tokenCli.instructions.step1') %> <strong>https://auth.riotgames.com</strong>
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            <%= t('tokenCli.instructions.step2') %>
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            <%= t('tokenCli.instructions.step3') %> <strong>F12</strong> <%= t('tokenCli.instructions.step3b') %>
+                        </div>
+
+                        <div class="step">
+                            <span class="step-number">4</span>
+                            <%= t('tokenCli.instructions.step4') %> <strong>Application/Storage</strong> → <strong>Cookies</strong> → <strong>https://auth.riotgames.com</strong>
+                        </div>
+
+                        <div class="step">
+                            <span class="step-number">5</span>
+                            <%= t('tokenCli.instructions.step5') %> <strong>'ssid'</strong> <%= t('tokenCli.instructions.step5b') %> <strong>'clid'</strong> <%= t('tokenCli.instructions.step5c') %>
+                        </div>
+                    </div>
+
+                    <form method="POST" action="/auth/token-cli" id="tokenForm">
+                        <div class="mb-3">
+                            <label for="ssid" class="form-label">
+                                <%= t('tokenCli.form.ssidLabel') %> <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" id="ssid" name="ssid" rows="4" required
+                                      placeholder="<%= t('tokenCli.form.ssidPlaceholder') %>"></textarea>
+                            <div class="form-text text-muted">
+                                <%= t('tokenCli.form.ssidHelp') %>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="clid" class="form-label">
+                                <%= t('tokenCli.form.clidLabel') %> <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="clid" name="clid" required
+                                   placeholder="<%= t('tokenCli.form.clidPlaceholder') %>">
+                            <div class="form-text text-muted">
+                                <%= t('tokenCli.form.clidHelp') %>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="region" class="form-label">
+                                <%= t('tokenCli.form.regionLabel') %> <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-control" id="region" name="region" required>
+                                <option value="">
+                                    <%= t('tokenCli.form.regionPlaceholder') %>
+                                </option>
+                                <option value="na">North America (NA)</option>
+                                <option value="eu">Europe (EU)</option>
+                                <option value="ap">Asia Pacific (AP)</option>
+                                <option value="kr">Korea (KR)</option>
+                                <option value="latam">Latin America (LATAM)</option>
+                                <option value="br">Brazil (BR)</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                                <span class="loading-spinner">
+                                    <i class="fas fa-spinner fa-spin me-2"></i>
+                                </span>
+                                <span class="btn-text">
+                                    <i class="fas fa-magic me-2"></i>
+                                    <%= t('tokenCli.form.submitButton') %>
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="alternatives">
+                        <p class="text-muted mb-2">
+                            <%= t('tokenCli.alternatives.title') %>
+                        </p>
+                        <a href="/auth/setup" class="btn btn-secondary">
+                            <i class="fas fa-cog me-2"></i>
+                            <%= t('tokenCli.alternatives.manualSetup') %>
+                        </a>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <a href="/dashboard" class="back-link">
+                            <i class="fas fa-arrow-left me-1"></i>
+                            <%= t('tokenCli.navigation.backToDashboard') %>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-dismiss success alerts after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const successAlert = document.querySelector('.alert-success');
+            if (successAlert) {
+                setTimeout(() => {
+                    successAlert.style.opacity = '0';
+                    setTimeout(() => {
+                        successAlert.remove();
+                    }, 300);
+                }, 8000);
+            }
+        });
+
+        // Form validation and submission
+        document.getElementById('tokenForm').addEventListener('submit', function(e) {
+            const ssid = document.getElementById('ssid').value.trim();
+            const clid = document.getElementById('clid').value.trim();
+            const region = document.getElementById('region').value;
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Validation
+            let isValid = true;
+            let errorMsg = '';
+
+            if (!ssid) {
+                isValid = false;
+                errorMsg = '<%= t("tokenCli.errors.ssidRequired") %>';
+            } else if (ssid.length < 20) {
+                isValid = false;
+                errorMsg = '<%= t("tokenCli.errors.ssidTooShort") %>';
+            }
+
+            if (!clid) {
+                isValid = false;
+                errorMsg = '<%= t("tokenCli.errors.clidRequired") %>';
+            } else if (clid.length < 3) {
+                isValid = false;
+                errorMsg = '<%= t("tokenCli.errors.clidTooShort") %>';
+            }
+
+            if (!region) {
+                isValid = false;
+                errorMsg = '<%= t("tokenCli.errors.regionRequired") %>';
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+                alert(errorMsg);
+                return;
+            }
+
+            // Show loading state
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+
+            // Add timeout in case server takes too long
+            setTimeout(() => {
+                if (submitBtn.classList.contains('loading')) {
+                    submitBtn.classList.remove('loading');
+                    submitBtn.disabled = false;
+                }
+            }, 30000); // 30 seconds timeout
+        });
+
+        // Cookie validation helpers
+        document.getElementById('ssid').addEventListener('input', function() {
+            const value = this.value.trim();
+            if (value && value.length >= 20) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+                if (value) {
+                    this.classList.add('is-invalid');
+                }
+            }
+        });
+
+        document.getElementById('clid').addEventListener('input', function() {
+            const value = this.value.trim();
+            if (value && value.length >= 3) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+                if (value) {
+                    this.classList.add('is-invalid');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

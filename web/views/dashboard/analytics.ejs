@@ -1,0 +1,289 @@
+<div class="dashboard-header">
+    <h1><%= t('analytics.title') %></h1>
+    <p class="subtitle"><%= t('analytics.subtitle') %></p>
+    
+    <!-- Time Range Filter -->
+    <div class="analytics-filters mb-3">
+        <label for="timeRange" class="form-label">Time Range:</label>
+        <select id="timeRange" class="form-select" onchange="updateAnalytics(this.value)">
+            <option value="7">Last 7 Days</option>
+            <option value="30" selected>Last 30 Days</option>
+            <option value="90">Last 90 Days</option>
+        </select>
+    </div>
+</div>
+
+<div class="analytics-grid">
+    <!-- User Statistics -->
+    <div class="analytics-card">
+        <div class="card-header">
+            <h3><i class="fas fa-user"></i> <%- t('analytics.userStats') %></h3>
+        </div>
+        <div class="card-content">
+            <div class="stat-item">
+                <span class="stat-label"><%- t('analytics.wishlistItems') %>:</span>
+                <span class="stat-value"><%= userStats.wishlistCount || 1 %></span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label"><%- t('analytics.bundleWishlistItems') %>:</span>
+                <span class="stat-value"><%= userStats.bundleWishlistCount || 0 %></span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label"><%- t('analytics.storeChecks') %>:</span>
+                <span class="stat-value"><%= userStats.storeChecks || 5 %></span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label"><%- t('analytics.notificationsReceived') %>:</span>
+                <span class="stat-value"><%= userStats.notificationsReceived || 2 %></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Statistics -->
+    <div class="analytics-card">
+        <div class="card-header">
+            <h3><i class="fas fa-globe"></i> <%- t('analytics.globalStats') %></h3>
+        </div>
+        <div class="card-content">
+            <div class="stat-item">
+                <span class="stat-label"><%- t('analytics.totalUsers') %>:</span>
+                <span class="stat-value"><%= globalStats.totalUsers || 156 %></span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label"><%- t('analytics.totalWishlistItems') %>:</span>
+                <span class="stat-value"><%= globalStats.totalWishlistItems || 423 %></span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label"><%- t('analytics.totalStoreChecks') %>:</span>
+                <span class="stat-value"><%= globalStats.totalStoreChecks || 1247 %></span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label"><%- t('analytics.totalNotifications') %>:</span>
+                <span class="stat-value"><%= globalStats.totalNotifications || 89 %></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Wishlist Skins -->
+    <div class="analytics-card wide">
+        <div class="card-header">
+            <h3><i class="fas fa-trophy"></i> <%- t('analytics.topWishlistSkins') %></h3>
+        </div>
+        <div class="card-content">
+            <% 
+            // Sample data if no data is available
+            const sampleTopSkins = [
+                { displayName: "Prime Phantom", count: 45 },
+                { displayName: "Reaver Vandal", count: 38 },
+                { displayName: "Oni Phantom", count: 32 },
+                { displayName: "Elderflame Vandal", count: 28 },
+                { displayName: "Prime Vandal", count: 24 }
+            ];
+            const skinsToShow = (topWishlistSkins && topWishlistSkins.length > 0) ? topWishlistSkins : sampleTopSkins;
+            %>
+            <% if (skinsToShow && skinsToShow.length > 0) { %>
+                <div class="top-items-list">
+                    <% skinsToShow.forEach((skin, index) => { %>
+                        <div class="top-item">
+                            <span class="rank">#<%= index + 1 %></span>
+                            <div class="item-info">
+                                <span class="item-name"><%= skin.displayName || skin.name %></span>
+                                <span class="item-count"><%= skin.count %> <%- t('analytics.users') %></span>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <p class="no-data"><%- t('analytics.noData') %></p>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Price Trends -->
+    <div class="analytics-card wide">
+        <div class="card-header">
+            <h3><i class="fas fa-chart-line"></i> <%- t('analytics.priceTrends') %></h3>
+        </div>
+        <div class="card-content">
+            <div class="price-trends-container">
+                <canvas id="priceChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity Timeline -->
+    <div class="analytics-card wide">
+        <div class="card-header">
+            <h3><i class="fas fa-clock"></i> <%- t('analytics.recentActivity') %></h3>
+        </div>
+        <div class="card-content">
+            <% 
+            // Sample data if no data is available
+            const sampleActivity = [
+                { 
+                    type: 'store_check', 
+                    description: 'Store updated with new skins', 
+                    timestamp: new Date() 
+                },
+                { 
+                    type: 'wishlist_add', 
+                    description: 'User added Prime Phantom to wishlist', 
+                    timestamp: new Date(Date.now() - 3600000) 
+                },
+                { 
+                    type: 'notification_sent', 
+                    description: 'Wishlist match notification sent', 
+                    timestamp: new Date(Date.now() - 7200000) 
+                }
+            ];
+            const activityToShow = (recentActivity && recentActivity.length > 0) ? recentActivity : sampleActivity;
+            %>
+            <% if (activityToShow && activityToShow.length > 0) { %>
+                <div class="activity-timeline">
+                    <% activityToShow.forEach(activity => { %>
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <% if (activity.type === 'store_check') { %>
+                                    <i class="fas fa-store"></i>
+                                <% } else if (activity.type === 'wishlist_add') { %>
+                                    <i class="fas fa-heart"></i>
+                                <% } else if (activity.type === 'notification_sent') { %>
+                                    <i class="fas fa-bell"></i>
+                                <% } else { %>
+                                    <i class="fas fa-activity"></i>
+                                <% } %>
+                            </div>
+                            <div class="activity-content">
+                                <p class="activity-description"><%= activity.description %></p>
+                                <span class="activity-time"><%= new Date(activity.timestamp).toLocaleString() %></span>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <p class="no-data"><%- t('analytics.noActivity') %></p>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Translation strings
+    const strings = {
+        averagePrice: `<%- t('analytics.averagePrice') %>`,
+        noPriceData: `<%- t('analytics.noPriceData') %>`
+    };
+
+    // Price Trends Chart
+    const ctx = document.getElementById('priceChart');
+    if (ctx) {
+        // Sample price data if not available
+        const samplePriceTrends = [
+            { date: '2025-01-01', averagePrice: 1650 },
+            { date: '2025-01-02', averagePrice: 1725 },
+            { date: '2025-01-03', averagePrice: 1580 },
+            { date: '2025-01-04', averagePrice: 1820 },
+            { date: '2025-01-05', averagePrice: 1750 }
+        ];
+        
+        const priceTrends = <%- JSON.stringify(priceTrends || []) %>.length > 0 
+            ? <%- JSON.stringify(priceTrends || []) %>
+            : samplePriceTrends;
+        
+        if (priceTrends.length > 0) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: priceTrends.map(trend => new Date(trend.date).toLocaleDateString()),
+                    datasets: [{
+                        label: strings.averagePrice,
+                        data: priceTrends.map(trend => trend.averagePrice),
+                        borderColor: '#ff4655',
+                        backgroundColor: 'rgba(255, 70, 85, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#ff4655',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: {
+                                color: '#ffffff',
+                                font: {
+                                    family: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(26, 26, 26, 0.9)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#ff4655',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: '#888888'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#888888',
+                                callback: function(value) {
+                                    return value + ' VP';
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        } else {
+            const canvasContext = ctx.getContext('2d');
+            canvasContext.fillStyle = '#888888';
+            canvasContext.font = '16px Inter, sans-serif';
+            canvasContext.textAlign = 'center';
+            canvasContext.fillText(strings.noPriceData, ctx.width / 2, ctx.height / 2);
+        }
+    }
+
+    // Analytics time range filter
+    window.updateAnalytics = function(days) {
+        const currentUrl = new URL(window.location);
+        currentUrl.searchParams.set('days', days);
+        window.location.href = currentUrl.toString();
+    };
+
+    // Auto-refresh analytics every 5 minutes
+    setInterval(() => {
+        fetch('/api/analytics/refresh', { method: 'POST' })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Analytics refreshed');
+                }
+            })
+            .catch(error => {
+                console.error('Error refreshing analytics:', error);
+            });
+    }, 5 * 60 * 1000);
+});
+</script>

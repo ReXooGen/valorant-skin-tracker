@@ -1,0 +1,487 @@
+<div class="dashboard-header">
+    <h1><i class="fas fa-cog"></i><%= t('settings.title') %></h1>
+    <p class="subtitle"><%= t('settings.subtitle') %></p>
+</div>
+
+<div class="settings-container">
+    <!-- Language Settings -->
+    <div class="settings-section">
+        <div class="section-header">
+            <h3><i class="fas fa-language me-2"></i><%- t('settings.language') %></h3>
+        </div>
+        <div class="setting-item">
+            <label for="language-select" class="setting-label"><%- t('settings.selectLanguage') %>:</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                <select id="language-select" class="form-select enhanced-select">
+                    <option value="en" <% if (currentLanguage === 'en') { %>selected<% } %>>🇺🇸 English</option>
+                    <option value="id" <% if (currentLanguage === 'id') { %>selected<% } %>>🇮🇩 Bahasa Indonesia</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Settings -->
+    <div class="settings-section">
+        <div class="section-header">
+            <h3><i class="fas fa-bell me-2"></i><%- t('settings.notifications') %></h3>
+        </div>
+        <div class="setting-item">
+            <div class="setting-row">
+                <div class="setting-info">
+                    <span class="setting-label"><%- t('settings.enableNotifications') %></span>
+                    <small class="setting-description">Receive notifications when wishlist items are available</small>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="notifications-enabled" <% if (userSettings.notificationsEnabled) { %>checked<% } %>>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+        <div class="setting-item">
+            <div class="setting-row">
+                <div class="setting-info">
+                    <span class="setting-label"><%- t('settings.enableAutoCheck') %></span>
+                    <small class="setting-description">Automatically check store for updates</small>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="auto-check-enabled" <% if (userSettings.autoCheckEnabled) { %>checked<% } %>>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+        <div class="setting-item">
+            <div class="setting-row">
+                <div class="setting-info">
+                    <span class="setting-label"><%- t('settings.bundleNotifications') %></span>
+                    <small class="setting-description">Get notified about bundle deals</small>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="bundle-notifications" <% if (userSettings.bundleNotifications) { %>checked<% } %>>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timing Settings -->
+    <div class="settings-section">
+        <div class="section-header">
+            <h3><i class="fas fa-clock me-2"></i><%- t('settings.timing') %></h3>
+        </div>
+        <div class="setting-item">
+            <label for="check-time" class="setting-label"><%- t('settings.dailyCheckTime') %>:</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                <input type="time" id="check-time" class="form-control enhanced-input" value="<%= userSettings.checkTime || '19:05' %>">
+            </div>
+        </div>
+        <div class="setting-item">
+            <label for="timezone" class="setting-label"><%- t('settings.timezone') %>:</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                <select id="timezone" class="form-select enhanced-select">
+                    <option value="Asia/Jakarta" <% if (userSettings.timezone === 'Asia/Jakarta') { %>selected<% } %>>🇮🇩 WIB (GMT+7)</option>
+                    <option value="Asia/Makassar" <% if (userSettings.timezone === 'Asia/Makassar') { %>selected<% } %>>🇮🇩 WITA (GMT+8)</option>
+                    <option value="Asia/Jayapura" <% if (userSettings.timezone === 'Asia/Jayapura') { %>selected<% } %>>🇮🇩 WIT (GMT+9)</option>
+                    <option value="UTC" <% if (userSettings.timezone === 'UTC') { %>selected<% } %>>🌍 UTC (GMT+0)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Settings -->
+    <div class="settings-section">
+        <div class="section-header">
+            <h3><i class="fas fa-key me-2"></i><%- t('settings.account') %></h3>
+        </div>
+        
+        <!-- Enhanced Token Status Display -->
+        <div class="setting-item">
+            <label class="setting-label"><%- t('settings.tokenStatus') %>:</label>
+            <div class="token-status-container">
+                <% if (tokens && tokens.access_token) { %>
+                    <div class="token-status active">
+                        <div class="status-indicator">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="status-content">
+                            <span class="status-text">
+                                <% if (lang === 'id') { %>
+                                    Token Aktif
+                                <% } else { %>
+                                    Token Active
+                                <% } %>
+                            </span>
+                            <div class="token-details">
+                                <small>
+                                    <i class="fas fa-map-marker-alt me-1"></i>Region: <%= tokens.region || 'Unknown' %>
+                                    <br>
+                                    <i class="fas fa-calendar-alt me-1"></i>Expires: <%= new Date(tokens.expires_at).toLocaleString(lang === 'id' ? 'id-ID' : 'en-US') %>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <div class="token-status inactive">
+                        <div class="status-indicator">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="status-content">
+                            <span class="status-text">
+                                <% if (lang === 'id') { %>
+                                    Token Tidak Tersedia
+                                <% } else { %>
+                                    No Token Available
+                                <% } %>
+                            </span>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Token Management Actions -->
+        <div class="setting-item">
+            <div class="token-actions">
+                <% if (tokens && tokens.access_token) { %>
+                    <button class="btn btn-warning refresh-tokens">
+                        <i class="fas fa-sync-alt"></i> 
+                        <% if (lang === 'id') { %>
+                            Refresh Token
+                        <% } else { %>
+                            Refresh Token
+                        <% } %>
+                    </button>
+                    <button class="btn btn-info test-tokens">
+                        <i class="fas fa-vial"></i> 
+                        <% if (lang === 'id') { %>
+                            Test Token
+                        <% } else { %>
+                            Test Token
+                        <% } %>
+                    </button>
+                    <button class="btn btn-danger remove-tokens">
+                        <i class="fas fa-trash"></i> 
+                        <% if (lang === 'id') { %>
+                            Hapus Token
+                        <% } else { %>
+                            Remove Token
+                        <% } %>
+                    </button>
+                <% } else { %>
+                    <a href="/auth/token-cli" class="btn btn-primary">
+                        <i class="fas fa-magic"></i> 
+                        <% if (lang === 'id') { %>
+                            Setup Token Otomatis
+                        <% } else { %>
+                            Auto Token Setup
+                        <% } %>
+                    </a>
+                    <a href="/auth/setup" class="btn btn-outline-primary">
+                        <i class="fas fa-cog"></i> 
+                        <% if (lang === 'id') { %>
+                            Setup Manual
+                        <% } else { %>
+                            Manual Setup
+                        <% } %>
+                    </a>
+                <% } %>
+            </div>
+            <small class="help-text">
+                <% if (lang === 'id') { %>
+                    Token diperlukan untuk mengakses toko dan notifikasi. Gunakan setup otomatis untuk kemudahan.
+                <% } else { %>
+                    Tokens are required for store access and notifications. Use auto setup for convenience.
+                <% } %>
+            </small>
+        </div>
+
+        <!-- Riot Account Info -->
+        <div class="setting-item">
+            <label for="riot-username" class="setting-label"><%- t('settings.riotUsername') %>:</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                <input type="text" id="riot-username" class="form-control enhanced-input" value="<%= userSettings.riotUsername || '' %>" placeholder="<%- t('settings.riotUsernamePlaceholder') %>">
+            </div>
+            <small class="help-text">
+                <% if (lang === 'id') { %>
+                    Opsional: Username Riot untuk identifikasi
+                <% } else { %>
+                    Optional: Riot username for identification
+                <% } %>
+            </small>
+        </div>
+    </div>
+
+    <div class="settings-section danger-zone">
+        <h3><i class="fas fa-exclamation-triangle"></i> <%- t('settings.dangerZone') %></h3>
+        <div class="setting-item">
+            <button class="btn btn-danger clear-wishlist">
+                <i class="fas fa-trash"></i> <%- t('settings.clearWishlist') %>
+            </button>
+            <small class="help-text"><%- t('settings.clearWishlistHelp') %></small>
+        </div>
+        <div class="setting-item">
+            <button class="btn btn-danger clear-all-data">
+                <i class="fas fa-exclamation-triangle"></i> <%- t('settings.clearAllData') %>
+            </button>
+            <small class="help-text"><%- t('settings.clearAllDataHelp') %></small>
+        </div>
+    </div>
+
+    <div class="settings-actions">
+        <button class="btn btn-primary save-settings">
+            <i class="fas fa-save"></i> <%- t('settings.saveSettings') %>
+        </button>
+        <button class="btn btn-secondary reset-settings">
+            <i class="fas fa-undo"></i> <%- t('settings.resetSettings') %>
+        </button>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const strings = {
+        saveSuccess: `<%- t('settings.saveSuccess') %>`,
+        saveError: `<%- t('settings.saveError') %>`,
+        confirmClearWishlist: `<%- t('settings.confirmClearWishlist') %>`,
+        confirmClearAllData: `<%- t('settings.confirmClearAllData') %>`,
+        clearSuccess: `<%- t('settings.clearSuccess') %>`,
+        clearError: `<%- t('settings.clearError') %>`
+    };
+
+    // Language change
+    document.getElementById('language-select').addEventListener('change', function() {
+        const newLanguage = this.value;
+        document.cookie = `language=${newLanguage}; path=/; max-age=31536000`;
+        window.location.reload();
+    });
+
+    // Save settings
+    document.querySelector('.save-settings').addEventListener('click', async function() {
+        const settings = {
+            notificationsEnabled: document.getElementById('notifications-enabled').checked,
+            autoCheckEnabled: document.getElementById('auto-check-enabled').checked,
+            bundleNotifications: document.getElementById('bundle-notifications').checked,
+            checkTime: document.getElementById('check-time').value,
+            timezone: document.getElementById('timezone').value,
+            riotUsername: document.getElementById('riot-username').value
+        };
+
+        try {
+            const response = await fetch('/api/settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(settings)
+            });
+
+            if (response.ok) {
+                this.textContent = strings.saveSuccess;
+                this.classList.add('btn-success');
+                const saveText = `<%- t('settings.saveSettings') %>`;
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-save"></i> ' + saveText;
+                    this.classList.remove('btn-success');
+                }, 2000);
+            } else {
+                throw new Error('Failed to save settings');
+            }
+        } catch (error) {
+            console.error('Error saving settings:', error);
+            alert(strings.saveError);
+        }
+    });
+
+    // Token management
+    const refreshTokensBtn = document.querySelector('.refresh-tokens');
+    const testTokensBtn = document.querySelector('.test-tokens');
+    const removeTokensBtn = document.querySelector('.remove-tokens');
+
+    if (refreshTokensBtn) {
+        refreshTokensBtn.addEventListener('click', async function() {
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+            
+            try {
+                const response = await fetch('/api/tokens/refresh', {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    this.innerHTML = '<i class="fas fa-check"></i> Refreshed!';
+                    this.classList.add('btn-success');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    throw new Error(result.error || 'Failed to refresh tokens');
+                }
+            } catch (error) {
+                console.error('Error refreshing tokens:', error);
+                this.innerHTML = '<i class="fas fa-times"></i> Failed';
+                this.classList.add('btn-danger');
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh Token';
+                    this.classList.remove('btn-danger');
+                    this.disabled = false;
+                }, 2000);
+            }
+        });
+    }
+
+    if (testTokensBtn) {
+        testTokensBtn.addEventListener('click', async function() {
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
+            
+            try {
+                const response = await fetch('/api/tokens/test', {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    this.innerHTML = '<i class="fas fa-check"></i> Valid';
+                    this.classList.add('btn-success');
+                    alert('Token is valid and working correctly!');
+                } else {
+                    throw new Error(result.error || 'Token test failed');
+                }
+            } catch (error) {
+                console.error('Error testing tokens:', error);
+                this.innerHTML = '<i class="fas fa-times"></i> Invalid';
+                this.classList.add('btn-danger');
+                alert('Token test failed: ' + error.message);
+            }
+            
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-vial"></i> Test Token';
+                this.classList.remove('btn-success', 'btn-danger');
+                this.disabled = false;
+            }, 2000);
+        });
+    }
+
+    if (removeTokensBtn) {
+        removeTokensBtn.addEventListener('click', async function() {
+            const confirmMessage = 'Are you sure you want to remove your tokens? You will lose access to store data and notifications.';
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+            
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Removing...';
+            
+            try {
+                const response = await fetch('/api/tokens/remove', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    this.innerHTML = '<i class="fas fa-check"></i> Removed';
+                    this.classList.add('btn-success');
+                    alert('Tokens removed successfully! The page will refresh.');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    throw new Error(result.error || 'Failed to remove tokens');
+                }
+            } catch (error) {
+                console.error('Error removing tokens:', error);
+                this.innerHTML = '<i class="fas fa-times"></i> Failed';
+                this.classList.add('btn-danger');
+                
+                let errorMessage = 'Failed to remove tokens';
+                if (error.message.includes('No tokens found')) {
+                    errorMessage = 'No tokens found to remove';
+                } else if (error.message.includes('already been removed')) {
+                    errorMessage = 'Tokens have already been removed';
+                } else {
+                    errorMessage = 'Error: ' + error.message;
+                }
+                
+                alert(errorMessage);
+                
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-trash"></i> Remove Token';
+                    this.classList.remove('btn-danger');
+                    this.disabled = false;
+                }, 3000);
+            }
+        });
+    }
+
+    // Update existing update-tokens handler (fallback)
+    const updateTokensBtn = document.querySelector('.update-tokens');
+    if (updateTokensBtn) {
+        updateTokensBtn.addEventListener('click', function() {
+            window.open('/auth/token-cli', '_blank', 'width=500,height=600');
+        });
+    }
+
+    // Clear wishlist
+    document.querySelector('.clear-wishlist').addEventListener('click', async function() {
+        if (!confirm(strings.confirmClearWishlist)) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/wishlist/clear', {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                alert(strings.clearSuccess);
+            } else {
+                throw new Error('Failed to clear wishlist');
+            }
+        } catch (error) {
+            console.error('Error clearing wishlist:', error);
+            alert(strings.clearError);
+        }
+    });
+
+    // Clear all data
+    document.querySelector('.clear-all-data').addEventListener('click', async function() {
+        if (!confirm(strings.confirmClearAllData)) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/user/clear', {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                alert(strings.clearSuccess);
+                window.location.href = '/auth/login';
+            } else {
+                throw new Error('Failed to clear user data');
+            }
+        } catch (error) {
+            console.error('Error clearing user data:', error);
+            alert(strings.clearError);
+        }
+    });
+
+    // Reset settings
+    document.querySelector('.reset-settings').addEventListener('click', function() {
+        const confirmMessage = `<%- t('settings.confirmReset') %>`;
+        if (confirm(confirmMessage)) {
+            window.location.reload();
+        }
+    });
+});
+</script>

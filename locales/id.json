@@ -1,0 +1,240 @@
+{
+  "common": {
+    "yes": "Ya",
+    "no": "Tidak",
+    "cancel": "Batal",
+    "confirm": "Konfirmasi",
+    "save": "Simpan",
+    "delete": "Hapus",
+    "edit": "Edit",
+    "loading": "Memuat...",
+    "error": "Terjadi kesalahan",
+    "success": "Berhasil",
+    "warning": "Peringatan",
+    "info": "Informasi"
+  },
+  "dashboard": {
+    "title": "Dashboard Valorant Skin Tracker",
+    "welcome": "Selamat datang di Valorant Skin Tracker",
+    "description": "Kelola skin wishlist dan lacak harga skin Valorant Anda",
+    "tokenRequired": {
+      "title": "Perlu Setup Token",
+      "description": "Anda perlu mengatur token akun Riot untuk mengakses store dan menggunakan semua fitur.",
+      "autoSetup": "Setup Otomatis (Direkomendasikan)",
+      "manualSetup": "Setup Manual"
+    },
+    "setupSuccess": {
+      "auto": "🎉 Token berhasil disetup menggunakan Auto Token Fetcher! Anda sekarang dapat mengakses store Valorant dan menggunakan semua fitur.",
+      "manual": "🎉 Token berhasil disetup secara manual! Anda sekarang dapat mengakses store Valorant dan menggunakan semua fitur.",
+      "ready": "Akun Anda sekarang siap. Anda dapat:",
+      "viewStore": "Lihat store Valorant Anda saat ini",
+      "addWishlist": "Tambahkan skin ke wishlist",
+      "checkAnalytics": "Cek analitik dan tren harga"
+    },
+    "menu": {
+      "dashboard": "Dashboard",
+      "store": "Toko",
+      "wishlist": "Wishlist",
+      "analytics": "Analitik",
+      "settings": "Pengaturan",
+      "logout": "Keluar"
+    }
+  },
+  "store": {
+    "title": "Toko",
+    "subtitle": "Item Toko Valorant Saat Ini",
+    "noData": "Data toko tidak tersedia",
+    "refreshStore": "Refresh toko untuk melihat item terkini",
+    "viewHistory": "Lihat Riwayat Harga"
+  },
+  "wishlist": {
+    "title": "Wishlist",
+    "subtitle": "Lacak skin dan bundle favorit Anda",
+    "skins": "Skin",
+    "bundles": "Bundle",
+    "empty": "Wishlist Anda kosong",
+    "emptyDesc": "Tambahkan skin dari toko untuk melacak kapan mereka tersedia",
+    "noBundles": "Tidak ada bundle di wishlist",
+    "noBundlesDesc": "Tambahkan bundle untuk melacak kapan mereka tersedia di toko",
+    "browseStore": "Jelajahi Toko",
+    "available": "Tersedia Sekarang",
+    "waiting": "Menunggu",
+    "lastPrice": "Harga terakhir terlihat",
+    "buyNow": "Tersedia di Toko",
+    "remove": "Hapus",
+    "add": "Tambah ke Wishlist",
+    "added": "Ditambahkan!",
+    "confirmRemove": "Apakah Anda yakin ingin menghapus item ini dari wishlist?"
+  },
+  "bundles": {
+    "title": "Bundle",
+    "description": "Lihat bundle senjata terbaru",
+    "expires": "Berakhir",
+    "items": "Item",
+    "addToWishlist": "Tambah Bundle ke Wishlist",
+    "viewDetails": "Lihat Detail"
+  },
+  "analytics": {
+    "title": "Analitik",
+    "subtitle": "Statistik dan wawasan tentang aktivitas toko Valorant Anda",
+    "userStats": "Statistik Anda",
+    "globalStats": "Statistik Global",
+    "wishlistItems": "Item Wishlist",
+    "bundleWishlistItems": "Item Bundle Wishlist",
+    "storeChecks": "Pemeriksaan Toko",
+    "notificationsReceived": "Notifikasi Diterima",
+    "totalUsers": "Total Pengguna",
+    "totalWishlistItems": "Total Item Wishlist",
+    "totalStoreChecks": "Total Pemeriksaan Toko",
+    "totalNotifications": "Total Notifikasi",
+    "topWishlistSkins": "Skin Paling Diinginkan",
+    "users": "pengguna",
+    "priceTrends": "Tren Harga",
+    "averagePrice": "Harga Rata-rata",
+    "recentActivity": "Aktivitas Terbaru",
+    "noData": "Tidak ada data tersedia",
+    "noActivity": "Tidak ada aktivitas terbaru",
+    "noPriceData": "Tidak ada data harga tersedia"
+  },
+  "auth": {
+    "login": "Masuk",
+    "logout": "Keluar",
+    "register": "Daftar",
+    "username": "Nama Pengguna",
+    "password": "Kata Sandi",
+    "email": "Email",
+    "discordId": "Discord ID",
+    "loginSuccess": "Berhasil masuk",
+    "loginError": "Gagal masuk",
+    "loginRequired": "Silakan login untuk mengakses fitur ini",
+    "registerSuccess": "Berhasil mendaftar",
+    "registerError": "Gagal mendaftar"
+  },
+  "settings": {
+    "title": "Pengaturan",
+    "subtitle": "Sesuaikan pengalaman Valorant Skin Tracker Anda",
+    "language": "Bahasa",
+    "selectLanguage": "Pilih Bahasa",
+    "notifications": "Notifikasi",
+    "enableNotifications": "Aktifkan Notifikasi",
+    "enableAutoCheck": "Aktifkan Pemeriksaan Toko Otomatis",
+    "bundleNotifications": "Notifikasi Bundle",
+    "timing": "Waktu",
+    "dailyCheckTime": "Waktu Pemeriksaan Harian",
+    "timezone": "Zona Waktu",
+    "account": "Akun",
+    "riotUsername": "Username Riot",
+    "riotUsernamePlaceholder": "Masukkan username Riot Anda",
+    "updateTokens": "Perbarui Token Riot",
+    "updateTokensHelp": "Klik untuk menyegarkan token autentikasi Anda",
+    "manualSetup": "Setup Token Manual",
+    "autoTokenFetcher": "Auto Token Fetcher",
+    "autoTokenFetcherDesc": "Ingin cara yang lebih mudah? Coba auto token fetcher:",
+    "dangerZone": "Zona Bahaya",
+    "clearWishlist": "Hapus Wishlist",
+    "clearWishlistHelp": "Hapus semua item dari wishlist Anda",
+    "clearAllData": "Hapus Semua Data",
+    "clearAllDataHelp": "Hapus semua data Anda termasuk token dan pengaturan",
+    "saveSettings": "Simpan Pengaturan",
+    "resetSettings": "Reset",
+    "saveSuccess": "Pengaturan berhasil disimpan!",
+    "saveError": "Gagal menyimpan pengaturan",
+    "confirmClearWishlist": "Apakah Anda yakin ingin menghapus seluruh wishlist?",
+    "confirmClearAllData": "Apakah Anda yakin ingin menghapus SEMUA data Anda? Ini tidak dapat dibatalkan!",
+    "confirmReset": "Apakah Anda yakin ingin mereset semua pengaturan?",
+    "clearSuccess": "Data berhasil dihapus",
+    "clearError": "Gagal menghapus data"
+  },
+  "notifications": {
+    "skinInStore": "Skin dalam wishlist tersedia di toko!",
+    "priceAlert": "Alert harga untuk skin",
+    "newBundle": "Bundle baru tersedia",
+    "tokenExpiring": "Token akan kadaluarsa"
+  },
+  "nightmarket": {
+    "title": "Night Market",
+    "description": "Skin diskon khusus tersedia untuk waktu terbatas",
+    "discount": "Diskon",
+    "originalPrice": "Harga Asli",
+    "discountedPrice": "Harga Diskon",
+    "timeRemaining": "Waktu Tersisa",
+    "notActive": "Night Market sedang tidak aktif"
+  },
+  "tokenCli": {
+    "title": "Auto Token Fetcher",
+    "subtitle": "Ambil token secara otomatis menggunakan cookies browser",
+    "advantages": {
+      "title": "Keuntungan Auto Token Fetcher:",
+      "easier": "Lebih mudah - hanya perlu 2 cookie dari browser",
+      "faster": "Lebih cepat - tidak perlu copy/paste token manual",
+      "safer": "Lebih aman - cookies kedaluwarsa secara alami"
+    },
+    "instructions": {
+      "title": "Cara Mendapatkan Cookie Browser:",
+      "step1": "Buka browser dan pergi ke",
+      "step2": "Pastikan Anda sudah login ke akun Riot Games Anda",
+      "step3": "Tekan",
+      "step3b": "untuk membuka Developer Tools",
+      "step4": "Pergi ke tab",
+      "step5": "Cari dan salin nilai untuk cookie",
+      "step5b": "dan",
+      "step5c": "",
+      "ssidCookie": "cookie ssid (string panjang)",
+      "clidCookie": "cookie clid (string pendek)"
+    },
+    "security": {
+      "title": "Keamanan:",
+      "description": "Cookie hanya digunakan sekali untuk mengambil token dan tidak disimpan. Token disimpan dengan aman untuk mengakses store Valorant Anda."
+    },
+    "form": {
+      "ssidLabel": "Cookie SSID",
+      "ssidPlaceholder": "Tempel nilai cookie ssid di sini...",
+      "ssidHelp": "Cookie Session ID dari auth.riotgames.com",
+      "clidLabel": "Cookie CLID",
+      "clidPlaceholder": "Tempel nilai cookie clid di sini...",
+      "clidHelp": "Cookie Client ID dari auth.riotgames.com",
+      "regionLabel": "Region",
+      "regionPlaceholder": "Pilih Region",
+      "submitButton": "Ambil Token Otomatis"
+    },
+    "success": "Token berhasil diambil dan disimpan! Anda sekarang dapat menggunakan semua fitur bot.",
+    "errors": {
+      "missingFields": "Harap isi semua field yang diperlukan.",
+      "invalidSsid": "Cookie ssid tidak valid. Pastikan Anda menyalin nilai lengkap cookie ssid.",
+      "invalidClid": "Cookie clid tidak valid. Pastikan Anda menyalin nilai lengkap cookie clid.",
+      "authFailed": "Autentikasi gagal. Cookie Anda mungkin kedaluwarsa atau tidak valid. Harap dapatkan cookie baru dari browser.",
+      "invalidCookies": "Cookie tidak valid atau kedaluwarsa. Silakan login ulang di browser dan ambil cookie baru.",
+      "fetchFailed": "Gagal mengambil token. Silakan coba lagi atau gunakan metode setup manual.",
+      "ssidRequired": "Harap masukkan cookie ssid.",
+      "ssidTooShort": "Cookie ssid terlalu pendek. Pastikan Anda menyalin nilai lengkap.",
+      "clidRequired": "Harap masukkan cookie clid.",
+      "clidTooShort": "Cookie clid terlalu pendek. Pastikan Anda menyalin nilai lengkap.",
+      "regionRequired": "Harap pilih region."
+    },
+    "alternatives": {
+      "title": "Mengalami masalah? Coba metode alternatif:",
+      "manualSetup": "Setup Manual"
+    },
+    "navigation": {
+      "backToDashboard": "Kembali ke Dashboard"
+    }
+  },
+  "error": {
+    "404": {
+      "title": "Halaman Tidak Ditemukan",
+      "message": "Halaman yang Anda cari tidak ada."
+    },
+    "500": {
+      "title": "Kesalahan Server",
+      "message": "Terjadi kesalahan internal server."
+    },
+    "unauthorized": "Tidak diizinkan",
+    "forbidden": "Dilarang",
+    "tokenExpired": "Token telah kadaluarsa",
+    "invalidToken": "Token tidak valid",
+    "tokenCli": {
+      "noTokens": "Anda perlu mengatur token Riot terlebih dahulu untuk mengakses store.",
+      "tokenCheckFailed": "Tidak dapat memverifikasi token Anda. Silakan coba atur ulang."
+    }
+  }
+}

@@ -1,6 +1,9 @@
 const { Client, GatewayIntentBits, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } = require('discord.js');
 const { loadWishlist, checkSkins, loadUserTokens, fetchStoreSkins } = require('./utils/valorantApi');
 const DailyChecker = require('./scheduler/dailyChecker');
+const WebServer = require('./web/server');
+const DatabaseService = require('./database/service');
+const AnalyticsService = require('./analytics/service');
 const axios = require('axios');
 require('dotenv').config();
 
@@ -50,13 +53,30 @@ client.safeEditReply = safeEditReply;
 
 // Initialize daily checker
 let dailyChecker;
+let webServer;
+let database;
+let analytics;
 
 client.once('ready', async () => {
     console.log(`✅ Logged in as ${client.user.tag}`);
     
+    // Initialize database
+    database = new DatabaseService();
+    await database.initialize();
+    
+    // Initialize analytics
+    analytics = new AnalyticsService(database);
+    
     // Start daily checker
     dailyChecker = new DailyChecker(client);
     dailyChecker.start();
+    
+    // Start web server if enabled
+    if (process.env.ENABLE_WEB_DASHBOARD !== 'false') {
+        webServer = new WebServer();
+        await webServer.start();
+        console.log('🌐 Web dashboard started successfully!');
+    }
     
     // Register slash commands
     const commands = [
@@ -164,6 +184,60 @@ client.once('ready', async () => {
         {
             name: 'checktoken',
             description: 'Check if your current tokens are still valid'
+        },
+        {
+            name: 'bundles',
+            description: '🎁 Check current featured bundles'
+        },
+        {
+            name: 'nightmarket',
+            description: '🌙 Check Night Market discounts (if active)'
+        },
+        {
+            name: 'pricehistory',
+            description: '📊 View price history for a specific skin',
+            options: [
+                {
+                    name: 'skin_name',
+                    description: 'Name of the skin to check price history',
+                    type: 3, // STRING
+                    required: true,
+                    autocomplete: true
+                },
+                {
+                    name: 'days',
+                    description: 'Number of days to look back (default: 30)',
+                    type: 4, // INTEGER
+                    required: false,
+                    choices: [
+                        { name: '7 days', value: 7 },
+                        { name: '30 days', value: 30 },
+                        { name: '90 days', value: 90 },
+                        { name: '1 year', value: 365 }
+                    ]
+                }
+            ]
+        },
+        {
+            name: 'analytics',
+            description: '📈 View your personal analytics and statistics',
+            options: [
+                {
+                    name: 'period',
+                    description: 'Time period for analytics',
+                    type: 3, // STRING
+                    required: false,
+                    choices: [
+                        { name: '7 days', value: '7' },
+                        { name: '30 days', value: '30' },
+                        { name: '90 days', value: '90' }
+                    ]
+                }
+            ]
+        },
+        {
+            name: 'webdashboard',
+            description: '🌐 Get web dashboard access link'
         },
         {
             name: 'help',
@@ -814,7 +888,9 @@ client.on('interactionCreate', async interaction => {
                             '📝 **Smart Wishlist** - Tambah skin dengan nama\n' +
                             '🔔 **Auto Alert** - Notifikasi otomatis setiap hari\n' +
                             '💰 **Harga IDR** - Konversi VP ke Rupiah\n' +
-                            '🛡️ **Anti-Spam** - Alert cerdas tanpa spam',
+                            '🛡️ **Anti-Spam** - Alert cerdas tanpa spam\n' +
+                            '🌐 **Web Dashboard** - Interface web lengkap\n' +
+                            '📊 **Analytics** - Statistik dan tracking detail',
                         inline: false
                     },
                     {
@@ -823,7 +899,8 @@ client.on('interactionCreate', async interaction => {
                             '1️⃣ Klik **Setup** untuk konfigurasi awal\n' +
                             '2️⃣ Klik **Wishlist** untuk kelola skin impian\n' +
                             '3️⃣ Klik **Store** untuk cek skin tersedia\n' +
-                            '4️⃣ Klik **Advanced** untuk fitur lanjutan',
+                            '4️⃣ Klik **Advanced** untuk fitur lanjutan\n' +
+                            '5️⃣ `/webdashboard` untuk akses web interface',
                         inline: false
                     }
                 )
@@ -855,6 +932,312 @@ client.on('interactionCreate', async interaction => {
                 components: [row], 
                 flags: MessageFlags.Ephemeral
             });
+            clearTimeoutOnComplete();
+            return;
+        }
+
+        if (commandName === 'webdashboard') {
+            const webUrl = process.env.WEB_URL || 'http://localhost:3000';
+            const embed = new EmbedBuilder()
+                .setTitle('🌐 Web Dashboard Access')
+                .setDescription('Access your advanced Valorant Skin Tracker dashboard in your browser!')
+                .setColor(0x00ff88)
+                .addFields(
+                    {
+                        name: '🔗 Dashboard URL',
+                        value: `[Open Web Dashboard](${webUrl})`,
+                        inline: false
+                    },
+                    {
+                        name: '🚀 Features Available',
+                        value: 
+                            '• **Advanced Analytics** - Detailed charts and statistics\n' +
+                            '• **Price History Tracking** - See skin price trends over time\n' +
+                            '• **Mobile-Friendly Interface** - Works great on phone/tablet\n' +
+                            '• **Real-time Updates** - Live store and wishlist updates\n' +
+                            '• **Multi-language Support** - English and Indonesian\n' +
+                            '• **Token Management** - Easy setup and monitoring',
+                        inline: false
+                    },
+                    {
+                        name: '🔐 Login Instructions',
+                        value: `1. Visit: ${webUrl}\n2. Enter your Discord ID: \`${user.id}\`\n3. Complete token setup if needed\n4. Enjoy the enhanced features!`,
+                        inline: false
+                    }
+                )
+                .setFooter({ text: 'Web dashboard provides enhanced features beyond Discord bot capabilities' });
+
+            await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+            clearTimeoutOnComplete();
+            return;
+        }
+
+        if (commandName === 'bundles') {
+            const userId = user.id;
+            const tokens = loadUserTokens(userId);
+            if (!tokens) {
+                return interaction.reply("❌ No account found. Use `/quicksetup` or `/autotokens` to set up your account.");
+            }
+
+            try {
+                await interaction.deferReply();
+                
+                const { fetchBundles } = require('./utils/valorantApi');
+                const bundles = await fetchBundles(tokens);
+
+                if (!bundles || bundles.length === 0) {
+                    return await interaction.editReply("📦 No featured bundles available right now.");
+                }
+
+                const embeds = bundles.map((bundle, index) => {
+                    const embed = new EmbedBuilder()
+                        .setTitle(`🎁 ${bundle.name}`)
+                        .setDescription(bundle.description || 'Featured weapon bundle')
+                        .setColor(0xff4655)
+                        .addFields(
+                            {
+                                name: '💎 Price',
+                                value: `**${bundle.price.toLocaleString()} VP**`,
+                                inline: true
+                            },
+                            {
+                                name: '📦 Items',
+                                value: `${bundle.items.length} items included`,
+                                inline: true
+                            }
+                        )
+                        .setFooter({ text: `Bundle ${index + 1} of ${bundles.length}` });
+
+                    if (bundle.displayIcon) {
+                        embed.setThumbnail(bundle.displayIcon);
+                    }
+
+                    if (bundle.verticalPromoImage) {
+                        embed.setImage(bundle.verticalPromoImage);
+                    }
+
+                    if (bundle.expiresAt) {
+                        const expiryDate = new Date(bundle.expiresAt);
+                        embed.addFields({
+                            name: '⏰ Expires',
+                            value: `<t:${Math.floor(expiryDate.getTime() / 1000)}:R>`,
+                            inline: true
+                        });
+                    }
+
+                    return embed;
+                });
+
+                await interaction.editReply({ embeds });
+            } catch (error) {
+                console.error('Bundles command error:', error);
+                await interaction.editReply("❌ Failed to fetch bundle information. Please try again later.");
+            }
+            clearTimeoutOnComplete();
+            return;
+        }
+
+        if (commandName === 'nightmarket') {
+            const userId = user.id;
+            const tokens = loadUserTokens(userId);
+            if (!tokens) {
+                return interaction.reply("❌ No account found. Use `/quicksetup` or `/autotokens` to set up your account.");
+            }
+
+            try {
+                await interaction.deferReply();
+                
+                const { fetchNightMarket } = require('./utils/valorantApi');
+                const nightMarket = await fetchNightMarket(tokens);
+
+                if (!nightMarket.active) {
+                    const embed = new EmbedBuilder()
+                        .setTitle('🌙 Night Market')
+                        .setDescription('Night Market is currently not active.')
+                        .setColor(0x666666)
+                        .addFields({
+                            name: '📅 When is Night Market available?',
+                            value: 'Night Market appears periodically with special discounted skins. Check back later!',
+                            inline: false
+                        })
+                        .setFooter({ text: 'Night Market typically runs for about 2 weeks when active' });
+
+                    return await interaction.editReply({ embeds: [embed] });
+                }
+
+                if (nightMarket.items.length === 0) {
+                    return await interaction.editReply("🌙 Night Market is active but no items found.");
+                }
+
+                const embeds = nightMarket.items.map((item, index) => {
+                    const embed = new EmbedBuilder()
+                        .setTitle(`🌙 ${item.skin.displayName}`)
+                        .setColor(0x9932cc)
+                        .addFields(
+                            {
+                                name: '💰 Original Price',
+                                value: `~~${item.originalPrice.toLocaleString()} VP~~`,
+                                inline: true
+                            },
+                            {
+                                name: '🏷️ Discounted Price',
+                                value: `**${item.discountedPrice.toLocaleString()} VP**`,
+                                inline: true
+                            },
+                            {
+                                name: '🎯 Discount',
+                                value: `**${item.discountPercent}% OFF**`,
+                                inline: true
+                            }
+                        )
+                        .setFooter({ text: `Night Market ${index + 1} of ${nightMarket.items.length}` });
+
+                    if (item.skin.displayIcon) {
+                        embed.setThumbnail(item.skin.displayIcon);
+                    }
+
+                    if (item.remainingDuration > 0) {
+                        const expiryTime = Math.floor((Date.now() + (item.remainingDuration * 1000)) / 1000);
+                        embed.addFields({
+                            name: '⏰ Expires',
+                            value: `<t:${expiryTime}:R>`,
+                            inline: false
+                        });
+                    }
+
+                    return embed;
+                });
+
+                await interaction.editReply({ embeds });
+            } catch (error) {
+                console.error('Night Market command error:', error);
+                await interaction.editReply("❌ Failed to fetch Night Market information. Please try again later.");
+            }
+            clearTimeoutOnComplete();
+            return;
+        }
+
+        if (commandName === 'pricehistory') {
+            const skinName = interaction.options.getString('skin_name');
+            const days = interaction.options.getInteger('days') || 30;
+
+            try {
+                await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
+                const { searchSkinsByName, getPriceHistory, calculatePriceStats } = require('./utils/valorantApi');
+                const matchingSkins = await searchSkinsByName(skinName);
+                
+                if (matchingSkins.length === 0) {
+                    return await interaction.editReply(`❌ No skin found with name "${skinName}".`);
+                }
+
+                const skin = matchingSkins[0]; // Use first match
+                const priceHistory = getPriceHistory(skin.uuid, 'ap', days);
+                const stats = calculatePriceStats(priceHistory);
+
+                const embed = new EmbedBuilder()
+                    .setTitle(`📊 Price History: ${skin.displayName}`)
+                    .setColor(0x00ff88)
+                    .addFields(
+                        {
+                            name: '📈 Statistics',
+                            value: `**Average:** ${stats.average.toLocaleString()} VP
+**Min:** ${stats.min.toLocaleString()} VP
+**Max:** ${stats.max.toLocaleString()} VP
+**Trend:** ${stats.trend} (${stats.changePercent > 0 ? '+' : ''}${stats.changePercent}%)`,
+                            inline: true
+                        },
+                        {
+                            name: '📅 Data Points',
+                            value: `**Period:** ${days} days
+**Records:** ${stats.totalDays} days
+**Coverage:** ${Math.round((stats.totalDays / days) * 100)}%`,
+                            inline: true
+                        }
+                    );
+
+                if (skin.displayIcon) {
+                    embed.setThumbnail(skin.displayIcon);
+                }
+
+                if (priceHistory.prices.length > 0) {
+                    const recentPrices = priceHistory.prices.slice(-10); // Last 10 entries
+                    const priceList = recentPrices.map(p => 
+                        `**${p.date}:** ${p.price.toLocaleString()} VP`
+                    ).join('\n');
+                    
+                    embed.addFields({
+                        name: '🗓️ Recent Prices',
+                        value: priceList || 'No recent data',
+                        inline: false
+                    });
+                }
+
+                embed.setFooter({ 
+                    text: `Use the web dashboard for detailed charts and graphs | Powered by community data` 
+                });
+
+                await interaction.editReply({ embeds: [embed] });
+            } catch (error) {
+                console.error('Price history command error:', error);
+                await interaction.editReply('❌ Failed to fetch price history. Please try again later.');
+            }
+            clearTimeoutOnComplete();
+            return;
+        }
+
+        if (commandName === 'analytics') {
+            const period = interaction.options.getString('period') || '30';
+            const days = parseInt(period);
+
+            try {
+                await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
+                // For now, provide basic analytics from existing data
+                const tokens = loadUserTokens(user.id);
+                const wishlist = loadWishlist(user.id);
+
+                const embed = new EmbedBuilder()
+                    .setTitle('📈 Your Analytics Overview')
+                    .setDescription(`Analytics for the last ${days} days`)
+                    .setColor(0x00ff88)
+                    .addFields(
+                        {
+                            name: '📊 Account Status',
+                            value: `**Tokens:** ${tokens ? '✅ Connected' : '❌ Not Set'}
+**Wishlist Items:** ${wishlist.length}
+**Region:** ${tokens?.region || 'Not Set'}`,
+                            inline: true
+                        },
+                        {
+                            name: '🎯 Quick Stats',
+                            value: `**Active Days:** Data collection started
+**Store Checks:** Command-based tracking
+**Wishlist Matches:** Real-time detection`,
+                            inline: true
+                        }
+                    )
+                    .addFields({
+                        name: '🌐 Enhanced Analytics Available',
+                        value: `For detailed analytics including:
+• **Price trend charts**
+• **Store history graphs** 
+• **Activity heatmaps**
+• **Wishlist match frequency**
+• **Personalized insights**
+
+Use \`/webdashboard\` to access the full analytics suite!`,
+                        inline: false
+                    })
+                    .setFooter({ 
+                        text: 'Web dashboard provides comprehensive analytics with visual charts and detailed insights' 
+                    });
+
+                await interaction.editReply({ embeds: [embed] });
+            } catch (error) {
+                console.error('Analytics command error:', error);
+                await interaction.editReply('❌ Failed to fetch analytics. Please try again later.');
+            }
             clearTimeoutOnComplete();
             return;
         }

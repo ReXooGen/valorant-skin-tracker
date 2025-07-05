@@ -1,0 +1,771 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-crosshairs me-2 text-danger"></i>
+        <%= title %>
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <% if (hasValidTokens) { %>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="refreshStore()">
+                    <i class="fas fa-sync me-1"></i>
+                    Refresh Store
+                </button>
+            <% } else { %>
+                <a href="/auth/token-cli" class="btn btn-sm btn-primary">
+                    <i class="fas fa-key me-1"></i>
+                    Setup Tokens
+                </a>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<!-- Hero Section -->
+<div class="hero-section mb-4">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <div class="hero-content">
+                <h2 class="hero-title text-light mb-3">
+                    <% if (lang === 'id') { %>
+                        Selamat datang, Agent!
+                    <% } else { %>
+                        Welcome, Agent!
+                    <% } %>
+                </h2>
+                <p class="hero-subtitle text-muted mb-4">
+                    <% if (lang === 'id') { %>
+                        Lacak skin Valorant favorit Anda dan dapatkan notifikasi saat tersedia di toko.
+                    <% } else { %>
+                        Track your favorite Valorant skins and get notified when they're available in store.
+                    <% } %>
+                </p>
+                <% if (!hasValidTokens) { %>
+                    <div class="hero-cta">
+                        <a href="/auth/token-cli" class="btn btn-primary btn-lg me-3">
+                            <i class="fas fa-magic me-2"></i>
+                            <% if (lang === 'id') { %>
+                                Mulai Setup Token
+                            <% } else { %>
+                                Start Token Setup
+                            <% } %>
+                        </a>
+                        <a href="/dashboard/analytics" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-chart-line me-2"></i>
+                            <% if (lang === 'id') { %>
+                                Lihat Analytics
+                            <% } else { %>
+                                View Analytics
+                            <% } %>
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+        <div class="col-md-4 text-center">
+            <div class="hero-image">
+                <!-- Valorant themed illustration -->
+                <div class="valorant-logo-container">
+                    <div class="crosshair-animation">
+                        <i class="fas fa-crosshairs fa-5x text-danger"></i>
+                    </div>
+                    <div class="pulse-rings">
+                        <div class="pulse-ring"></div>
+                        <div class="pulse-ring"></div>
+                        <div class="pulse-ring"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Token Setup Required Warning -->
+<% if (!hasValidTokens && !setupSuccess) { %>
+    <div class="alert alert-warning mb-4" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <strong><%= t('dashboard.tokenRequired.title') %></strong>
+        <div class="mt-2">
+            <p class="mb-2"><%= t('dashboard.tokenRequired.description') %></p>
+            <div class="d-flex gap-2">
+                <a href="/auth/token-cli" class="btn btn-warning btn-sm">
+                    <i class="fas fa-magic me-1"></i>
+                    <%= t('dashboard.tokenRequired.autoSetup') %>
+                </a>
+                <a href="/auth/setup" class="btn btn-outline-warning btn-sm">
+                    <i class="fas fa-cog me-1"></i>
+                    <%= t('dashboard.tokenRequired.manualSetup') %>
+                </a>
+            </div>
+        </div>
+    </div>
+<% } %>
+
+<!-- Setup Success Notification -->
+<% if (setupSuccess) { %>
+    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        <strong>
+            <%= t(`dashboard.setupSuccess.${setupMethod || 'auto'}`) %>
+        </strong>
+        <div class="mt-3">
+            <p class="mb-3"><%= t('dashboard.setupSuccess.ready') %></p>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="/dashboard/store" class="btn btn-primary btn-sm">
+                    <i class="fas fa-store me-1"></i>
+                    <%= t('dashboard.setupSuccess.viewStore') %>
+                </a>
+                <a href="/dashboard/wishlist" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-heart me-1"></i>
+                    <%= t('dashboard.setupSuccess.addWishlist') %>
+                </a>
+                <a href="/dashboard/analytics" class="btn btn-outline-info btn-sm">
+                    <i class="fas fa-chart-line me-1"></i>
+                    <%= t('dashboard.setupSuccess.checkAnalytics') %>
+                </a>
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<% } %>
+
+<!-- Stats Overview -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="stat-number">
+                <%= storeHistory ? storeHistory.length : 0 %>
+            </div>
+            <div class="stat-label">
+                <% if (lang === 'id') { %>
+                    Skin Hari Ini
+                <% } else { %>
+                    Today's Skins
+                <% } %>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="stat-number">
+                <%= wishlist ? wishlist.length : 0 %>
+            </div>
+            <div class="stat-label">
+                <% if (lang === 'id') { %>
+                    Item Wishlist
+                <% } else { %>
+                    Wishlist Items
+                <% } %>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="stat-number text-success">
+                <%= wishlistMatches ? wishlistMatches.length : 0 %>
+            </div>
+            <div class="stat-label">
+                <% if (lang === 'id') { %>
+                    Wishlist Match
+                <% } else { %>
+                    Wishlist Matches
+                <% } %>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="stat-number">
+                <% if (analytics && analytics.overview) { %>
+                    <%= analytics.overview.activeDays || 0 %>
+                <% } else { %>
+                    0
+                <% } %>
+            </div>
+            <div class="stat-label">
+                <% if (lang === 'id') { %>
+                    Hari Aktif
+                <% } else { %>
+                    Active Days
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Wishlist Matches Alert -->
+<% if (wishlistMatches && wishlistMatches.length > 0) { %>
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <h4 class="alert-heading">
+        <i class="fas fa-heart text-danger me-2"></i>
+        <% if (lang === 'id') { %>
+            Wishlist Match Ditemukan!
+        <% } else { %>
+            Wishlist Matches Found!
+        <% } %>
+    </h4>
+    <p class="mb-2">
+        <% if (lang === 'id') { %>
+            <%= wishlistMatches.length %> skin dari wishlist Anda tersedia di toko hari ini!
+        <% } else { %>
+            <%= wishlistMatches.length %> skin(s) from your wishlist are available in today's store!
+        <% } %>
+    </p>
+    <hr>
+    <div class="row">
+        <% wishlistMatches.forEach(function(skin) { %>
+        <div class="col-md-3 mb-2">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-star text-warning me-2"></i>
+                <span><%= skin.skin_name %></span>
+                <span class="badge bg-primary ms-auto"><%= skin.price %> VP</span>
+            </div>
+        </div>
+        <% }); %>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+<% } %>
+
+<div class="row">
+    <!-- Current Store -->
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-store me-2"></i>
+                    <% if (lang === 'id') { %>
+                        Toko Hari Ini
+                    <% } else { %>
+                        Today's Store
+                    <% } %>
+                </h5>
+                <small class="text-muted">
+                    <% if (storeHistory && storeHistory.length > 0) { %>
+                        <% if (lang === 'id') { %>
+                            Diperbarui: <%= new Date(storeHistory[0].created_at).toLocaleString('id-ID') %>
+                        <% } else { %>
+                            Updated: <%= new Date(storeHistory[0].created_at).toLocaleString() %>
+                        <% } %>
+                    <% } %>
+                </small>
+            </div>
+            <div class="card-body">
+                <% if (storeHistory && storeHistory.length > 0) { %>
+                    <div class="row">
+                        <% storeHistory.forEach(function(skin, index) { 
+                            // Generate weapon icon based on skin name
+                            let weaponIcon = 'fas fa-crosshairs';
+                            let weaponColor = 'var(--valorant-red)';
+                            
+                            if (skin.skin_name && skin.skin_name.toLowerCase().includes('phantom')) {
+                                weaponIcon = 'fas fa-crosshairs';
+                                weaponColor = 'var(--valorant-red)';
+                            } else if (skin.skin_name && skin.skin_name.toLowerCase().includes('vandal')) {
+                                weaponIcon = 'fas fa-fire';
+                                weaponColor = 'var(--valorant-blue)';
+                            } else if (skin.skin_name && skin.skin_name.toLowerCase().includes('operator')) {
+                                weaponIcon = 'fas fa-crosshairs';
+                                weaponColor = '#ff9500';
+                            } else if (skin.skin_name && skin.skin_name.toLowerCase().includes('marshal')) {
+                                weaponIcon = 'fas fa-bullseye';
+                                weaponColor = '#00ff88';
+                            } else if (skin.skin_name && skin.skin_name.toLowerCase().includes('knife')) {
+                                weaponIcon = 'fas fa-cut';
+                                weaponColor = '#ff0066';
+                            }
+                        %>
+                        <div class="col-md-6 col-lg-3 mb-3">
+                            <div class="skin-card-enhanced <%= wishlistMatches && wishlistMatches.some(m => m.skin_uuid === skin.skin_uuid) ? 'wishlist-match' : '' %>">
+                                <div class="p-3">
+                                    <!-- Enhanced Skin Image with Fallbacks -->
+                                    <div class="skin-image-container">
+                                        <% if (skin.skin_uuid) { %>
+                                            <img 
+                                                class="skin-image dashboard-skin-image" 
+                                                src="https://media.valorant-api.com/weaponskins/<%= skin.skin_uuid %>/displayicon.png"
+                                                data-skin-uuid="<%= skin.skin_uuid %>"
+                                                data-skin-name="<%= skin.skin_name %>"
+                                                alt="<%= skin.skin_name %>"
+                                                onload="this.parentElement.querySelector('.skin-image-placeholder').style.display='none'; this.style.display='block';"
+                                                onerror="this.style.display='none'; this.parentElement.querySelector('.skin-image-placeholder').style.display='flex';"
+                                                style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; display: none;"
+                                            />
+                                        <% } %>
+                                        <div class="skin-image-placeholder dashboard-placeholder" style="display: flex; width: 100%; height: 120px; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(255,70,85,0.1), rgba(56,157,241,0.1)); border-radius: 8px; border: 2px dashed #444;">
+                                            <div class="weapon-icon-container" style="text-align: center;">
+                                                <i class="<%= weaponIcon %> weapon-icon" style="color: <%= weaponColor %>; font-size: 2.5rem; margin-bottom: 8px;"></i>
+                                                <div style="color: #888; font-size: 0.8rem;"><%= skin.skin_name %></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Skin Info -->
+                                    <h6 class="text-light mb-2 text-truncate" title="<%= skin.skin_name %>">
+                                        <%= skin.skin_name %>
+                                    </h6>
+                                    
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="badge price-badge fs-6"><%= skin.price %> VP</span>
+                                        <% if (wishlistMatches && wishlistMatches.some(m => m.skin_uuid === skin.skin_uuid)) { %>
+                                            <i class="fas fa-heart text-danger fs-5" title="In Wishlist"></i>
+                                        <% } else { %>
+                                            <button class="btn btn-outline-danger btn-sm" onclick="addToWishlist('<%= skin.skin_uuid %>', '<%= skin.skin_name %>')">
+                                                <i class="far fa-heart"></i>
+                                            </button>
+                                        <% } %>
+                                    </div>
+                                    
+                                    <!-- Rarity indicator -->
+                                    <div class="text-center">
+                                        <small class="text-muted">
+                                            <% 
+                                            let rarity = 'Common';
+                                            let rarityColor = '#888';
+                                            if (skin.price >= 2175) {
+                                                rarity = 'Legendary';
+                                                rarityColor = '#ffaa00';
+                                            } else if (skin.price >= 1775) {
+                                                rarity = 'Epic';
+                                                rarityColor = '#aa00ff';
+                                            } else if (skin.price >= 1275) {
+                                                rarity = 'Rare';
+                                                rarityColor = '#0088ff';
+                                            }
+                                            %>
+                                            <span class="rarity-indicator" data-rarity-color="<%= rarityColor %>">● <%= rarity %></span>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <% }); %>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="/dashboard/store" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-store me-2"></i>
+                            <% if (lang === 'id') { %>
+                                Lihat Semua Skin
+                            <% } else { %>
+                                View All Skins
+                            <% } %>
+                        </a>
+                    </div>
+                <% } else { %>
+                    <div class="text-center py-4">
+                        <i class="fas fa-store fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">
+                            <% if (lang === 'id') { %>
+                                Tidak ada data toko
+                            <% } else { %>
+                                No store data available
+                            <% } %>
+                        </h5>
+                        <p class="text-muted">
+                            <% if (lang === 'id') { %>
+                                Refresh toko untuk melihat skin hari ini
+                            <% } else { %>
+                                Refresh the store to see today's skins
+                            <% } %>
+                        </p>
+                        <button class="btn btn-primary" onclick="refreshStore()">
+                            <i class="fas fa-sync me-2"></i>
+                            <% if (lang === 'id') { %>
+                                Refresh Toko
+                            <% } else { %>
+                                Refresh Store
+                            <% } %>
+                        </button>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wishlist & Quick Stats -->
+    <div class="col-md-4">
+        <!-- Quick Wishlist -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-heart me-2"></i>
+                    <% if (lang === 'id') { %>
+                        Wishlist
+                    <% } else { %>
+                        Wishlist
+                    <% } %>
+                </h5>
+                <small class="text-muted">
+                    <%= wishlist ? wishlist.length : 0 %> 
+                    <% if (lang === 'id') { %>
+                        item
+                    <% } else { %>
+                        items
+                    <% } %>
+                </small>
+            </div>
+            <div class="card-body">
+                <% if (wishlist && wishlist.length > 0) { %>
+                    <% wishlist.forEach(function(item) { %>
+                    <div class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
+                        <span class="text-truncate me-2" title="<%= item.skin_name %>">
+                            <%= item.skin_name %>
+                        </span>
+                        <% if (wishlistMatches && wishlistMatches.some(m => m.skin_uuid === item.skin_uuid)) { %>
+                            <span class="badge bg-success">
+                                <% if (lang === 'id') { %>
+                                    Tersedia!
+                                <% } else { %>
+                                    Available!
+                                <% } %>
+                            </span>
+                        <% } else { %>
+                            <small class="text-muted">
+                                <% if (lang === 'id') { %>
+                                    Menunggu
+                                <% } else { %>
+                                    Waiting
+                                <% } %>
+                            </small>
+                        <% } %>
+                    </div>
+                    <% }); %>
+                    <div class="text-center mt-3">
+                        <a href="/dashboard/wishlist" class="btn btn-outline-primary btn-sm">
+                            <% if (lang === 'id') { %>
+                                Kelola Wishlist
+                            <% } else { %>
+                                Manage Wishlist
+                            <% } %>
+                        </a>
+                    </div>
+                <% } else { %>
+                    <div class="text-center py-3">
+                        <i class="fas fa-heart-broken fa-2x text-muted mb-2"></i>
+                        <p class="text-muted mb-0">
+                            <% if (lang === 'id') { %>
+                                Wishlist kosong
+                            <% } else { %>
+                                No wishlist items
+                            <% } %>
+                        </p>
+                        <small class="text-muted">
+                            <% if (lang === 'id') { %>
+                                Tambahkan skin ke wishlist
+                            <% } else { %>
+                                Add skins to your wishlist
+                            <% } %>
+                        </small>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Quick Analytics -->
+        <% if (analytics && analytics.overview) { %>
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>
+                    <% if (lang === 'id') { %>
+                        Analitik Singkat
+                    <% } else { %>
+                        Quick Analytics
+                    <% } %>
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <div class="border-end">
+                            <h4 class="text-primary mb-1"><%= analytics.overview.totalStoreChecks || 0 %></h4>
+                            <small class="text-muted">
+                                <% if (lang === 'id') { %>
+                                    Cek Toko
+                                <% } else { %>
+                                    Store Checks
+                                <% } %>
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h4 class="text-info mb-1"><%= analytics.overview.uniqueSkinsFound || 0 %></h4>
+                        <small class="text-muted">
+                            <% if (lang === 'id') { %>
+                                Skin Unik
+                            <% } else { %>
+                                Unique Skins
+                            <% } %>
+                        </small>
+                    </div>
+                    <div class="col-12">
+                        <h5 class="text-warning mb-1"><%= analytics.overview.averageStoreValue || 0 %> VP</h5>
+                        <small class="text-muted">
+                            <% if (lang === 'id') { %>
+                                Harga Rata-rata
+                            <% } else { %>
+                                Average Price
+                            <% } %>
+                        </small>
+                    </div>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="/dashboard/analytics" class="btn btn-outline-primary btn-sm">
+                        <% if (lang === 'id') { %>
+                            Lihat Detail
+                        <% } else { %>
+                            View Details
+                        <% } %>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <% } %>
+    </div>
+</div>
+
+<!-- Welcome Message for New Users -->
+<% if ((!storeHistory || storeHistory.length === 0) && (!wishlist || wishlist.length === 0)) { %>
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-primary">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-rocket fa-4x text-primary mb-4"></i>
+                <h3 class="mb-3">
+                    <% if (lang === 'id') { %>
+                        Selamat datang di Valorant Skin Tracker!
+                    <% } else { %>
+                        Welcome to Valorant Skin Tracker!
+                    <% } %>
+                </h3>
+                <p class="lead mb-4">
+                    <% if (lang === 'id') { %>
+                        Mulai lacak skin Valorant favorit Anda dan dapatkan notifikasi ketika tersedia di toko.
+                    <% } else { %>
+                        Start tracking your favorite Valorant skins and get notified when they're available in store.
+                    <% } %>
+                </p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="/auth/setup" class="btn btn-primary btn-lg">
+                        <i class="fas fa-cog me-2"></i>
+                        <% if (lang === 'id') { %>
+                            Setup Token
+                        <% } else { %>
+                            Setup Tokens
+                        <% } %>
+                    </a>
+                    <button class="btn btn-outline-primary btn-lg" onclick="refreshStore()">
+                        <i class="fas fa-sync me-2"></i>
+                        <% if (lang === 'id') { %>
+                            Cek Toko
+                        <% } else { %>
+                            Check Store
+                        <% } %>
+                    </button>
+                    <a href="/dashboard/wishlist" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-heart me-2"></i>
+                        <% if (lang === 'id') { %>
+                            Buat Wishlist
+                        <% } else { %>
+                            Create Wishlist
+                        <% } %>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<% } %>
+
+<script>
+    // Page-specific JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        // Apply dynamic colors to weapon icons and rarity indicators
+        document.querySelectorAll('.weapon-icon').forEach(icon => {
+            const color = icon.getAttribute('data-weapon-color');
+            if (color) {
+                icon.style.color = color;
+            }
+        });
+        
+        document.querySelectorAll('.rarity-indicator').forEach(indicator => {
+            const color = indicator.getAttribute('data-rarity-color');
+            if (color) {
+                indicator.style.color = color;
+            }
+        });
+        
+        // Auto-refresh store data every 5 minutes if user is active
+        let refreshInterval;
+        let isActive = true;
+        
+        function startAutoRefresh() {
+            refreshInterval = setInterval(() => {
+                if (isActive) {
+                    console.log('Auto-refreshing store data...');
+                    fetch('/api/store/refresh', { method: 'POST' })
+                        .then(response => response.json())
+                        .then data => {
+                            if (data.success) {
+                                console.log('Store auto-refreshed successfully');
+                                // Optionally update the UI without full page reload
+                            }
+                        })
+                        .catch(console.error);
+                }
+            }, 5 * 60 * 1000); // 5 minutes
+        }
+        
+        // Track user activity
+        document.addEventListener('visibilitychange', function() {
+            isActive = !document.hidden;
+        });
+        
+        // Start auto-refresh if user has tokens
+        const hasTokens = <%= hasValidTokens ? 'true' : 'false' %>;
+        const hasStoreData = <%= (storeHistory && storeHistory.length > 0) ? 'true' : 'false' %>;
+        
+        if (hasTokens && hasStoreData) {
+            startAutoRefresh();
+        }
+        
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+    });
+
+    // Global functions for skin interaction
+    function addToWishlist(skinUuid, skinName) {
+        fetch('/api/wishlist/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                skin_uuid: skinUuid,
+                skin_name: skinName
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update UI to show item added
+                location.reload();
+            } else {
+                alert('Failed to add to wishlist: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error adding to wishlist:', error);
+            alert('Failed to add to wishlist');
+        });
+    }
+
+    function refreshStore() {
+        const button = event.target;
+        const originalText = button.innerHTML;
+        
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+        
+        fetch('/api/store/refresh', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                button.innerHTML = '<i class="fas fa-check"></i> Refreshed!';
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            } else {
+                throw new Error(data.error || 'Failed to refresh store');
+            }
+        })
+        .catch(error => {
+            console.error('Error refreshing store:', error);
+            button.innerHTML = '<i class="fas fa-times"></i> Failed';
+            button.classList.add('btn-danger');
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.classList.remove('btn-danger');
+                button.disabled = false;
+            }, 2000);
+        });
+    }
+
+    // Unified skin image loading function (same as store and wishlist)
+    window.loadSkinImage = function(imgElement, skinUuid, skinName) {
+        const fallbackImages = [
+            `https://media.valorant-api.com/weaponskins/${skinUuid}/displayicon.png`,
+            `https://media.valorant-api.com/weaponskinlevels/${skinUuid}/displayicon.png`,
+            `https://media.valorant-api.com/weaponskins/${skinUuid}/chromas/standard/fullrender.png`
+        ];
+        
+        let currentIndex = 0;
+        
+        function tryNextImage() {
+            if (currentIndex >= fallbackImages.length) {
+                // Show weapon icon placeholder based on skin name
+                const weaponType = getWeaponTypeFromName(skinName);
+                const placeholder = imgElement.parentElement.querySelector('.skin-image-placeholder');
+                if (placeholder) {
+                    placeholder.style.display = 'flex';
+                }
+                return;
+            }
+            
+            const img = new Image();
+            img.onload = function() {
+                imgElement.src = fallbackImages[currentIndex];
+                imgElement.style.display = 'block';
+            };
+            img.onerror = function() {
+                currentIndex++;
+                tryNextImage();
+            };
+            img.src = fallbackImages[currentIndex];
+        }
+        
+        tryNextImage();
+    };
+
+    // Get weapon type from skin name
+    function getWeaponTypeFromName(skinName) {
+        const name = skinName.toLowerCase();
+        if (name.includes('vandal')) return 'vandal';
+        if (name.includes('phantom')) return 'phantom';
+        if (name.includes('operator')) return 'operator';
+        if (name.includes('sheriff')) return 'sheriff';
+        if (name.includes('guardian')) return 'guardian';
+        if (name.includes('classic')) return 'classic';
+        if (name.includes('knife') || name.includes('melee')) return 'knife';
+        return 'unknown';
+    }
+
+    // Initialize all skin images on page load
+    document.querySelectorAll('.skin-image[data-skin-uuid]').forEach(function(img) {
+        const skinUuid = img.getAttribute('data-skin-uuid');
+        const skinName = img.getAttribute('data-skin-name');
+        if (skinUuid && skinName) {
+            loadSkinImage(img, skinUuid, skinName);
+        }
+    });
+
+    // Initialize dashboard-specific styling
+    document.querySelectorAll('.weapon-icon').forEach(function(icon) {
+        const color = icon.getAttribute('data-weapon-color');
+        if (color) {
+            icon.style.color = color;
+        }
+    });
+
+    document.querySelectorAll('.rarity-indicator').forEach(function(indicator) {
+        const color = indicator.getAttribute('data-rarity-color');
+        if (color) {
+            indicator.style.color = color;
+        }
+    });
+</script>

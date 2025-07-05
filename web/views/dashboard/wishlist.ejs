@@ -1,0 +1,796 @@
+<div class="dashboard-header">
+    <h1><%= t('wishlist.title') %></h1>
+    <p class="subtitle"><%= t('wishlist.subtitle') %></p>
+</div>
+
+<!-- Add New Skin to Wishlist Section -->
+<div class="add-skin-section mb-4">
+    <div class="add-wishlist-card">
+        <div class="add-wishlist-header">
+            <div class="header-icon">
+                <i class="fas fa-heart-plus"></i>
+            </div>
+            <div class="header-content">
+                <h4 class="header-title">Add Skin to Wishlist</h4>
+                <p class="header-subtitle">Search and add your favorite skins to track when they appear in store</p>
+            </div>
+        </div>
+        
+        <div class="add-wishlist-form">
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <div class="search-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <input type="text" 
+                           class="search-input" 
+                           id="skinSearchInput"
+                           placeholder="Type skin name to search (e.g., Prime Vandal, Dragon King AK...)"
+                           data-skin-search
+                           data-skin-search-options='{"allowAddToWishlist": false}'>
+                    <div class="search-clear" id="searchClear" style="display: none;">
+                        <i class="fas fa-times"></i>
+                    </div>
+                </div>
+                <div class="search-results" id="searchResults" style="display: none;"></div>
+            </div>
+            
+            <div class="add-button-container">
+                <button class="add-wishlist-btn" onclick="addSelectedSkinToWishlist()" disabled id="addToWishlistBtn">
+                    <div class="btn-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="btn-content">
+                        <span class="btn-title">Add to Wishlist</span>
+                        <span class="btn-subtitle">Select a skin first</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="wishlist-tabs">
+    <button class="tab-button active" data-tab="skins">
+        <i class="fas fa-gun"></i> <%- t('wishlist.skins') %>
+    </button>
+    <button class="tab-button" data-tab="bundles">
+        <i class="fas fa-box"></i> <%- t('wishlist.bundles') %>
+    </button>
+</div>
+
+<div class="tab-content active" id="skins-tab">
+    <% if (skinWishlist && skinWishlist.length > 0) { %>
+        <div class="wishlist-grid">
+            <% for (let i = 0; i < skinWishlist.length; i++) { 
+                const item = skinWishlist[i];
+                let weaponIcon = 'fas fa-crosshairs';
+                let weaponColor = '#ff4655';
+                let weaponType = 'Unknown';
+                const skinName = item.skin_name || '';
+                
+                if (skinName.toLowerCase().includes('phantom')) {
+                    weaponIcon = 'fas fa-crosshairs';
+                    weaponColor = '#ff4655';
+                    weaponType = 'Phantom';
+                } else if (skinName.toLowerCase().includes('vandal')) {
+                    weaponIcon = 'fas fa-fire';
+                    weaponColor = '#389df1';
+                    weaponType = 'Vandal';
+                } else if (skinName.toLowerCase().includes('operator')) {
+                    weaponIcon = 'fas fa-crosshairs';
+                    weaponColor = '#ff9500';
+                    weaponType = 'Operator';
+                } else if (skinName.toLowerCase().includes('marshal')) {
+                    weaponIcon = 'fas fa-bullseye';
+                    weaponColor = '#00ff88';
+                    weaponType = 'Marshal';
+                } else if (skinName.toLowerCase().includes('knife') || 
+                          skinName.toLowerCase().includes('karambit') || 
+                          skinName.toLowerCase().includes('butterfly')) {
+                    weaponIcon = 'fas fa-cut';
+                    weaponColor = '#ff0066';
+                    weaponType = 'Melee';
+                } else if (skinName.toLowerCase().includes('sheriff')) {
+                    weaponIcon = 'fas fa-crosshairs';
+                    weaponColor = '#ffaa00';
+                    weaponType = 'Sheriff';
+                } else if (skinName.toLowerCase().includes('guardian')) {
+                    weaponIcon = 'fas fa-bullseye';
+                    weaponColor = '#00aaff';
+                    weaponType = 'Guardian';
+                }
+            %>
+                <div class="wishlist-card <%= item.inStore ? 'in-store' : '' %>">
+                    <div class="wishlist-image">
+                        <% if (item.skin_uuid) { %>
+                            <img 
+                                class="skin-image" 
+                                src="https://media.valorant-api.com/weaponskins/<%= item.skin_uuid %>/displayicon.png"
+                                data-skin-uuid="<%= item.skin_uuid %>"
+                                data-skin-name="<%= item.skin_name %>"
+                                alt="<%= item.skin_name %>"
+                                onload="this.parentElement.querySelector('.skin-image-placeholder').style.display='none'; this.style.display='block';"
+                                onerror="this.style.display='none'; this.parentElement.querySelector('.skin-image-placeholder').style.display='flex';"
+                                style="width: 100%; height: 200px; object-fit: cover; border-radius: 12px 12px 0 0; display: none;"
+                            />
+                        <% } %>
+                        <div class="skin-image-placeholder wishlist-placeholder" style="display: flex; width: 100%; height: 220px; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(255,70,85,0.15), rgba(56,157,241,0.15)); border-radius: 12px 12px 0 0; border: 2px dashed rgba(255, 255, 255, 0.2); position: relative;">
+                            <div class="weapon-icon-container" style="text-align: center;">
+                                <i class="<%= weaponIcon %> weapon-icon" style="color: <%= weaponColor %>; font-size: 3.5rem; margin-bottom: 12px;"></i>
+                                <div style="color: #888; font-size: 1rem; max-width: 200px; word-wrap: break-word; font-weight: 500;"><%= weaponType %></div>
+                            </div>
+                            <% if (item.inStore) { %>
+                                <div class="store-badge">
+                                    <i class="fas fa-store"></i>
+                                    <span>Available</span>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="wishlist-info">
+                        <h3 class="wishlist-name" title="<%= item.skin_name %>">
+                            <%= item.skin_name %>
+                        </h3>
+                        <p class="wishlist-weapon">
+                            <i class="<%= weaponIcon %>" style="color: <%= weaponColor %>;"></i> 
+                            <%= weaponType %>
+                        </p>
+                        <div class="wishlist-status">
+                            <% if (item.inStore) { %>
+                                <span class="status-badge available">
+                                    <i class="fas fa-check-circle"></i> Available in Store
+                                </span>
+                                <% if (item.currentPrice) { %>
+                                    <div class="current-price">
+                                        <span class="price"><%= item.currentPrice %> VP</span>
+                                    </div>
+                                <% } %>
+                            <% } else { %>
+                                <span class="status-badge waiting">
+                                    <i class="fas fa-clock"></i> Waiting
+                                </span>
+                            <% } %>
+                        </div>
+                        <div class="wishlist-meta">
+                            <small class="added-date">
+                                <i class="fas fa-calendar-plus"></i>
+                                Added: <%= new Date(item.added_at).toLocaleDateString() %>
+                            </small>
+                            <% if (item.priority > 1) { %>
+                                <div class="priority-indicator">
+                                    <i class="fas fa-star"></i>
+                                    Priority: <%= item.priority %>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="wishlist-actions">
+                        <% if (item.inStore) { %>
+                            <button class="btn btn-success" onclick="window.location.href='/dashboard/store'">
+                                <i class="fas fa-shopping-cart"></i> View in Store
+                            </button>
+                        <% } %>
+                        <button class="btn btn-danger remove-wishlist" data-skin-uuid="<%= item.skin_uuid %>">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    <% } else { %>
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-heart-broken"></i>
+            </div>
+            <h3>Your wishlist is empty</h3>
+            <p>Add your favorite skins to track when they become available in the store.</p>
+            <a href="/dashboard/store" class="btn btn-primary">
+                <i class="fas fa-store"></i> Browse Store
+            </a>
+        </div>
+    <% } %>
+</div>
+
+<div class="tab-content" id="bundles-tab">
+    <% if (bundleWishlist && bundleWishlist.length > 0) { %>
+        <div class="wishlist-grid">
+            <% for (let i = 0; i < bundleWishlist.length; i++) { 
+                const item = bundleWishlist[i];
+            %>
+                <div class="wishlist-card bundle-card">
+                    <div class="wishlist-image">
+                        <div class="skin-image-placeholder bundle-placeholder">
+                            <div class="bundle-icon-container">
+                                <i class="fas fa-box weapon-icon" style="color: #389df1;"></i>
+                            </div>
+                            <div class="bundle-overlay">
+                                <span class="bundle-label">Bundle</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wishlist-info">
+                        <h3 class="wishlist-name" title="<%= item.bundle_name || item.displayName %>">
+                            <%= item.bundle_name || item.displayName %>
+                        </h3>
+                        <p class="wishlist-weapon">
+                            <i class="fas fa-box" style="color: #389df1;"></i> Bundle
+                        </p>
+                        <div class="wishlist-status">
+                            <% if (item.isInStore) { %>
+                                <span class="status-badge available">
+                                    <i class="fas fa-check-circle"></i> Available in Store
+                                </span>
+                                <div class="current-price">
+                                    <span class="price"><%= item.currentPrice %> VP</span>
+                                    <% if (item.discountPercent > 0) { %>
+                                        <span class="discount">-<%= item.discountPercent %>%</span>
+                                    <% } %>
+                                </div>
+                            <% } else { %>
+                                <span class="status-badge waiting">
+                                    <i class="fas fa-clock"></i> Waiting
+                                </span>
+                            <% } %>
+                        </div>
+                        <div class="wishlist-meta">
+                            <small class="added-date">
+                                <i class="fas fa-calendar-plus"></i>
+                                Added: <%= new Date(item.added_at).toLocaleDateString() %>
+                            </small>
+                        </div>
+                    </div>
+                    <div class="wishlist-actions">
+                        <button class="btn btn-danger remove-bundle-wishlist" data-bundle-uuid="<%= item.bundle_uuid %>">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    <% } else { %>
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-box"></i>
+            </div>
+            <h3>No bundles in wishlist</h3>
+            <p>Add bundles to track when they become available.</p>
+            <a href="/dashboard/store" class="btn btn-primary">
+                <i class="fas fa-store"></i> Browse Store
+            </a>
+        </div>
+    <% } %>
+</div>
+
+<!-- JavaScript moved to separate script block to avoid EJS issues -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching functionality
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            const tabId = this.dataset.tab;
+            
+            // Remove active from all tabs and content
+            tabButtons.forEach(function(b) { 
+                b.classList.remove('active'); 
+            });
+            document.querySelectorAll('.tab-content').forEach(function(c) { 
+                c.classList.remove('active'); 
+            });
+            
+            // Add active to clicked tab and corresponding content
+            this.classList.add('active');
+            document.getElementById(tabId + '-tab').classList.add('active');
+        });
+    });
+
+    // Enhanced image loading for wishlist items
+    document.querySelectorAll('.skin-image[data-skin-uuid]').forEach(function(img) {
+        const skinUuid = img.getAttribute('data-skin-uuid');
+        const skinName = img.getAttribute('data-skin-name');
+        if (skinUuid && skinName) {
+            loadSkinImageWithFallback(img, skinUuid, skinName);
+        }
+    });
+
+    // Enhanced skin image loading function
+    window.loadSkinImageWithFallback = function(imgElement, skinUuid, skinName) {
+        const fallbackImages = [
+            `https://media.valorant-api.com/weaponskins/${skinUuid}/displayicon.png`,
+            `https://media.valorant-api.com/weaponskinlevels/${skinUuid}/displayicon.png`,
+            `https://media.valorant-api.com/weaponskins/${skinUuid}/chromas/standard/fullrender.png`
+        ];
+        
+        let currentIndex = 0;
+        
+        function tryNextImage() {
+            if (currentIndex >= fallbackImages.length) {
+                // All images failed, keep placeholder visible
+                return;
+            }
+            
+            const testImg = new Image();
+            testImg.onload = function() {
+                imgElement.src = fallbackImages[currentIndex];
+                imgElement.style.display = 'block';
+                const placeholder = imgElement.parentElement.querySelector('.skin-image-placeholder');
+                if (placeholder) {
+                    placeholder.style.display = 'none';
+                }
+            };
+            testImg.onerror = function() {
+                currentIndex++;
+                tryNextImage();
+            };
+            testImg.src = fallbackImages[currentIndex];
+        }
+        
+        tryNextImage();
+    };
+
+    // Remove from wishlist functionality
+    const removeButtons = document.querySelectorAll('.remove-wishlist');
+    removeButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            const skinUuid = this.dataset.skinUuid;
+            
+            if (!confirm('Are you sure you want to remove this skin from your wishlist?')) {
+                return;
+            }
+            
+            // Disable button and show loading
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Removing...';
+            
+            fetch('/api/wishlist/remove', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    skin_uuid: skinUuid
+                })
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(result) {
+                if (result.success) {
+                    // Remove the card with animation
+                    const card = button.closest('.wishlist-card');
+                    card.style.transition = 'all 0.3s ease';
+                    card.style.transform = 'scale(0.8)';
+                    card.style.opacity = '0';
+                    
+                    setTimeout(function() {
+                        card.remove();
+                        
+                        // Check if wishlist is now empty
+                        if (document.querySelectorAll('#skins-tab .wishlist-card').length === 0) {
+                            location.reload();
+                        }
+                    }, 300);
+                } else {
+                    throw new Error(result.error || 'Failed to remove from wishlist');
+                }
+            })
+            .catch(function(error) {
+                console.error('Error removing from wishlist:', error);
+                alert('Failed to remove from wishlist: ' + error.message);
+                
+                // Reset button
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-trash"></i> Remove';
+            });
+        });
+    });
+
+    // Remove bundle from wishlist functionality
+    const removeBundleButtons = document.querySelectorAll('.remove-bundle-wishlist');
+    removeBundleButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            const bundleUuid = this.dataset.bundleUuid;
+            
+            if (!confirm('Are you sure you want to remove this bundle from your wishlist?')) {
+                return;
+            }
+            
+            // Disable button and show loading
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Removing...';
+            
+            fetch('/api/bundles/wishlist/remove', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    bundle_uuid: bundleUuid
+                })
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(result) {
+                if (result.success) {
+                    // Remove the card with animation
+                    const card = button.closest('.wishlist-card');
+                    card.style.transition = 'all 0.3s ease';
+                    card.style.transform = 'scale(0.8)';
+                    card.style.opacity = '0';
+                    
+                    setTimeout(function() {
+                        card.remove();
+                        
+                        // Check if bundle wishlist is now empty
+                        if (document.querySelectorAll('#bundles-tab .wishlist-card').length === 0) {
+                            location.reload();
+                        }
+                    }, 300);
+                } else {
+                    throw new Error(result.error || 'Failed to remove bundle from wishlist');
+                }
+            })
+            .catch(function(error) {
+                console.error('Error removing bundle from wishlist:', error);
+                alert('Failed to remove bundle from wishlist: ' + error.message);
+                
+                // Reset button
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-trash"></i> Remove';
+            });
+        });
+    });
+
+    // Auto-refresh notification for in-store items
+    const inStoreCards = document.querySelectorAll('.wishlist-card.in-store');
+    if (inStoreCards.length > 0) {
+        // Show notification that items are available
+        setTimeout(function() {
+            const notification = document.createElement('div');
+            notification.className = 'alert alert-success alert-dismissible fade show position-fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '9999';
+            notification.style.minWidth = '300px';
+            notification.innerHTML = 
+                '<i class="fas fa-heart text-danger me-2"></i>' +
+                '<strong>Wishlist items available!</strong>' +
+                '<div class="mt-1">' +
+                    '<small>' + inStoreCards.length + ' item(s) from your wishlist are currently in the store.</small>' +
+                '</div>' +
+                '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+            document.body.appendChild(notification);
+            
+            // Auto-remove after 10 seconds
+            setTimeout(function() {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 10000);
+        }, 1000);
+    }
+    
+    // Initialize skin images on page load
+    document.querySelectorAll('.skin-image[data-skin-uuid]').forEach(function(img) {
+        const skinUuid = img.getAttribute('data-skin-uuid');
+        const skinName = img.getAttribute('data-skin-name');
+        if (skinUuid && skinName) {
+            loadSkinImage(img, skinUuid, skinName);
+        }
+    });
+
+    // Enhanced search functionality
+    let selectedSkin = null;
+    const searchInput = document.getElementById('skinSearchInput');
+    const addBtn = document.getElementById('addToWishlistBtn');
+    const searchClear = document.getElementById('searchClear');
+    
+    // Initialize skin search widget with callback
+    if (window.SkinSearchWidget && searchInput) {
+        const widget = new SkinSearchWidget(searchInput, {
+            allowAddToWishlist: false,
+            onSelect: function(skinUuid, skinName) {
+                handleSkinSelection({ uuid: skinUuid, displayName: skinName });
+            }
+        });
+    }
+    
+    // Listen for skin selection events from the widget
+    searchInput.addEventListener('skinSelected', function(event) {
+        const { skinUuid, skinName } = event.detail;
+        handleSkinSelection({ uuid: skinUuid, displayName: skinName });
+    });
+    
+    // Update button state
+    function updateAddButton(skin = null) {
+        selectedSkin = skin;
+        
+        if (skin) {
+            addBtn.disabled = false;
+            addBtn.classList.remove('loading', 'success');
+            addBtn.querySelector('.btn-title').textContent = 'Add to Wishlist';
+            addBtn.querySelector('.btn-subtitle').textContent = `Add "${skin.displayName}"`;
+            addBtn.querySelector('.btn-icon i').className = 'fas fa-heart';
+        } else {
+            addBtn.disabled = true;
+            addBtn.classList.remove('loading', 'success');
+            addBtn.querySelector('.btn-title').textContent = 'Add to Wishlist';
+            addBtn.querySelector('.btn-subtitle').textContent = 'Select a skin first';
+            addBtn.querySelector('.btn-icon i').className = 'fas fa-heart';
+        }
+    }
+    
+    // Show/hide clear button
+    function updateClearButton() {
+        if (searchInput.value.trim()) {
+            searchClear.style.display = 'flex';
+        } else {
+            searchClear.style.display = 'none';
+        }
+    }
+    
+    // Search input events
+    searchInput.addEventListener('input', function() {
+        updateClearButton();
+        if (!this.value.trim()) {
+            updateAddButton(null);
+        }
+    });
+    
+    searchInput.addEventListener('focus', function() {
+        this.parentElement.parentElement.style.transform = 'scale(1.02)';
+    });
+    
+    searchInput.addEventListener('blur', function() {
+        this.parentElement.parentElement.style.transform = 'scale(1)';
+    });
+    
+    // Clear search
+    searchClear.addEventListener('click', function() {
+        searchInput.value = '';
+        searchInput.focus();
+        updateClearButton();
+        updateAddButton(null);
+    });
+    
+    window.handleSkinSelection = function(skin) {
+        updateAddButton(skin);
+    };
+
+    window.addSelectedSkinToWishlist = function() {
+        if (!selectedSkin) {
+            showNotification('error', 'Please select a skin first');
+            return;
+        }
+
+        // Update button to loading state
+        addBtn.classList.add('loading');
+        addBtn.disabled = true;
+        addBtn.querySelector('.btn-title').textContent = 'Adding...';
+        addBtn.querySelector('.btn-subtitle').textContent = 'Please wait';
+        addBtn.querySelector('.btn-icon i').className = 'fas fa-spinner';
+
+        fetch('/api/wishlist/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                skinUuid: selectedSkin.uuid,
+                skinName: selectedSkin.displayName
+            })
+        })
+        .then(function(response) { return response.json(); })
+        .then(function(result) {
+            if (result.success) {
+                // Success state
+                addBtn.classList.remove('loading');
+                addBtn.classList.add('success');
+                addBtn.querySelector('.btn-title').textContent = 'Added!';
+                addBtn.querySelector('.btn-subtitle').textContent = 'Successfully added to wishlist';
+                addBtn.querySelector('.btn-icon i').className = 'fas fa-check';
+                
+                showNotification('success', result.message || 'Added to wishlist!');
+                
+                // Reset form after delay
+                setTimeout(function() {
+                    searchInput.value = '';
+                    updateClearButton();
+                    updateAddButton(null);
+                    
+                    // Refresh page to show updated wishlist
+                    setTimeout(function() { location.reload(); }, 500);
+                }, 1500);
+                
+            } else if (result.requiresConfirmation && result.suggestions) {
+                addBtn.classList.remove('loading');
+                updateAddButton(selectedSkin);
+                showSuggestions(result.suggestions, selectedSkin.displayName);
+            } else {
+                throw new Error(result.error || 'Failed to add to wishlist');
+            }
+        })
+        .catch(function(error) {
+            addBtn.classList.remove('loading');
+            updateAddButton(selectedSkin);
+            showNotification('error', error.message || 'Failed to add to wishlist');
+        });
+    };
+    
+    // Show skin suggestions modal
+    window.showSuggestions = function(suggestions, originalQuery) {
+        let modalHtml = '<div class="modal fade" id="skinSuggestionsModal" tabindex="-1">';
+        modalHtml += '<div class="modal-dialog modal-lg"><div class="modal-content bg-dark border-0" style="background: linear-gradient(145deg, rgba(26, 26, 26, 0.98), rgba(35, 35, 35, 0.95)) !important; border-radius: 20px; overflow: hidden;">';
+        modalHtml += '<div class="modal-header border-0" style="background: linear-gradient(135deg, var(--valorant-red), #ff6b7a); padding: 2rem; position: relative;">';
+        modalHtml += '<div style="position: absolute; top: 0; left: 0; right: 0; height: 100%; background: url(\'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="white" opacity="0.1"/><circle cx="80" cy="40" r="1" fill="white" opacity="0.1"/><circle cx="40" cy="70" r="1.5" fill="white" opacity="0.1"/></svg>\') repeat; opacity: 0.3;"></div>';
+        modalHtml += '<div style="position: relative; z-index: 2;">';
+        modalHtml += '<h4 class="modal-title text-white" style="font-weight: 800; font-size: 1.5rem; margin: 0;"><i class="fas fa-magic me-3"></i>Did you mean?</h4>';
+        modalHtml += '<p class="text-white-50 mb-0 mt-2" style="font-size: 1rem;">We found some similar skins for "<strong>' + originalQuery + '</strong>"</p>';
+        modalHtml += '</div>';
+        modalHtml += '<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" style="position: relative; z-index: 3;"></button>';
+        modalHtml += '</div>';
+        
+        modalHtml += '<div class="modal-body" style="padding: 2rem; background: linear-gradient(180deg, rgba(35, 35, 35, 0.95), rgba(26, 26, 26, 0.98));">';
+        modalHtml += '<div class="suggestion-grid" style="display: grid; gap: 1rem;">';
+        
+        suggestions.forEach(function(suggestion, index) {
+            const weaponData = window.SkinImageHandler ? 
+                window.SkinImageHandler.getWeaponDataFromName(suggestion.displayName) :
+                { icon: 'fas fa-crosshairs', color: '#ff4655', type: 'Weapon' };
+            
+            modalHtml += '<div class="suggestion-card" onclick="selectSuggestion(\'' + suggestion.uuid + '\', \'' + suggestion.displayName.replace(/'/g, "\\'") + '\')" style="';
+            modalHtml += 'display: flex; align-items: center; padding: 1.5rem; background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)); ';
+            modalHtml += 'border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;">';
+            
+            // Animated background effect
+            modalHtml += '<div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 70, 85, 0.1), transparent); transition: left 0.6s; pointer-events: none;"></div>';
+            
+            modalHtml += '<div class="suggestion-image" style="width: 60px; height: 60px; margin-right: 1.5rem; border-radius: 12px; overflow: hidden; background: linear-gradient(135deg, rgba(255, 70, 85, 0.2), rgba(56, 157, 241, 0.2)); border: 2px solid rgba(255, 255, 255, 0.1); position: relative; z-index: 2;">';
+            modalHtml += '<img src="https://media.valorant-api.com/weaponskins/' + suggestion.uuid + '/displayicon.png" ';
+            modalHtml += 'style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" ';
+            modalHtml += 'onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\'">';
+            modalHtml += '<div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; font-size: 1.5rem; color: ' + weaponData.color + ';"><i class="' + weaponData.icon + '"></i></div>';
+            modalHtml += '</div>';
+            
+            modalHtml += '<div class="suggestion-info" style="flex: 1; position: relative; z-index: 2;">';
+            modalHtml += '<div class="suggestion-name" style="color: var(--text-primary); font-weight: 700; font-size: 1.2rem; margin-bottom: 0.5rem; line-height: 1.3;">' + suggestion.displayName + '</div>';
+            modalHtml += '<div class="suggestion-details" style="display: flex; gap: 1rem; align-items: center;">';
+            modalHtml += '<span style="color: ' + weaponData.color + '; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;"><i class="' + weaponData.icon + '"></i>' + weaponData.type + '</span>';
+            modalHtml += '<span style="background: rgba(255, 255, 255, 0.1); padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem; font-weight: 600; color: var(--valorant-blue);">' + Math.round(suggestion.similarity) + '% Match</span>';
+            modalHtml += '</div></div>';
+            
+            modalHtml += '<div class="suggestion-action" style="margin-left: 1rem; position: relative; z-index: 2;">';
+            modalHtml += '<div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--valorant-red), #ff6b7a); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.1rem; transition: all 0.3s ease;"><i class="fas fa-arrow-right"></i></div>';
+            modalHtml += '</div>';
+            
+            modalHtml += '</div>';
+        });
+        
+        modalHtml += '</div>';
+        modalHtml += '<div class="text-center mt-3">';
+        modalHtml += '<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius: 12px; padding: 0.75rem 2rem; font-weight: 600;">Cancel</button>';
+        modalHtml += '</div>';
+        modalHtml += '</div></div></div></div>';
+        
+        // Remove existing modal if any
+        const existingModal = document.getElementById('skinSuggestionsModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        
+        // Add modal to page
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        // Add hover effects via JavaScript
+        const suggestionCards = document.querySelectorAll('.suggestion-card');
+        suggestionCards.forEach(function(card) {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px) scale(1.02)';
+                this.style.borderColor = 'var(--valorant-red)';
+                this.style.boxShadow = '0 8px 25px rgba(255, 70, 85, 0.3)';
+                // Trigger slide effect
+                const slideEffect = this.querySelector('div[style*="left: -100%"]');
+                if (slideEffect) {
+                    slideEffect.style.left = '100%';
+                }
+                // Scale image
+                const img = this.querySelector('.suggestion-image img');
+                if (img) {
+                    img.style.transform = 'scale(1.1)';
+                }
+                // Scale action icon
+                const actionIcon = this.querySelector('.suggestion-action > div');
+                if (actionIcon) {
+                    actionIcon.style.transform = 'scale(1.1) rotate(5deg)';
+                }
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+                this.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                this.style.boxShadow = '';
+                // Reset slide effect
+                const slideEffect = this.querySelector('div[style*="left: 100%"]');
+                if (slideEffect) {
+                    slideEffect.style.left = '-100%';
+                }
+                // Reset image
+                const img = this.querySelector('.suggestion-image img');
+                if (img) {
+                    img.style.transform = '';
+                }
+                // Reset action icon
+                const actionIcon = this.querySelector('.suggestion-action > div');
+                if (actionIcon) {
+                    actionIcon.style.transform = '';
+                }
+            });
+        });
+        
+        // Show modal
+        const modal = new bootstrap.Modal(document.getElementById('skinSuggestionsModal'), {
+            backdrop: 'static',
+            keyboard: true
+        });
+        modal.show();
+    };
+    
+    // Select suggestion from modal
+    window.selectSuggestion = function(skinUuid, skinName) {
+        const cleanSkinName = skinName.replace(/\\'/g, "'");
+        selectedSkin = { uuid: skinUuid, displayName: cleanSkinName };
+        
+        // Update search input
+        searchInput.value = cleanSkinName;
+        
+        // Update button state
+        updateAddButton(selectedSkin);
+        
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('skinSuggestionsModal'));
+        if (modal) {
+            modal.hide();
+        }
+        
+        // Focus on add button for better UX
+        setTimeout(function() {
+            addBtn.focus();
+        }, 500);
+    };
+});
+
+// Notification system
+function showNotification(type, message) {
+    // Remove existing notifications
+    const existingNotifications = document.querySelectorAll('.wishlist-notification');
+    existingNotifications.forEach(function(notification) {
+        notification.remove();
+    });
+
+    // Create new notification
+    const notification = document.createElement('div');
+    notification.className = 'wishlist-notification alert alert-' + (type === 'success' ? 'success' : 'danger') + ' alert-dismissible fade show position-fixed';
+    notification.style.top = '20px';
+    notification.style.right = '20px';
+    notification.style.zIndex = '9999';
+    notification.style.minWidth = '300px';
+    notification.innerHTML = 
+        '<i class="fas fa-' + (type === 'success' ? 'check-circle' : 'exclamation-circle') + ' me-2"></i>' +
+        '<strong>' + message + '</strong>' +
+        '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(function() {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 5000);
+}
+</script>
+
+<!-- Include unified skin image handler -->
+<script src="/js/skin-image-handler.js"></script>
+<!-- Include skin search widget -->
+<script src="/js/skin-search-widget.js"></script>

@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/dashboard.css" rel="stylesheet">
+    <%- style %>
+    <style>
+        :root {
+            --valorant-red: #ff4655;
+            --valorant-dark: #0f1419;
+            --valorant-blue: #389df1;
+            --bg-dark: #1a1a1a;
+            --bg-darker: #0d1117;
+            --text-light: #f0f6fc;
+            --text-muted: #8b949e;
+            --border-color: #30363d;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
+            color: var(--text-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(15, 20, 25, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1030;
+            height: 64px;
+        }
+
+        .navbar-brand {
+            color: var(--valorant-red) !important;
+            font-weight: bold;
+        }
+
+        .card {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .card-header {
+            background: rgba(255, 70, 85, 0.1);
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-light);
+        }
+
+        .btn-primary {
+            background: var(--valorant-red);
+            border-color: var(--valorant-red);
+        }
+
+        .btn-primary:hover {
+            background: #e63946;
+            border-color: #e63946;
+        }
+
+        .btn-outline-primary {
+            color: var(--valorant-red);
+            border-color: var(--valorant-red);
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--valorant-red);
+            border-color: var(--valorant-red);
+        }
+
+        .skin-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid var(--border-color);
+            background: rgba(26, 26, 26, 0.6);
+        }
+
+        .skin-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 70, 85, 0.3);
+        }
+
+        .skin-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .price-badge {
+            background: var(--valorant-blue);
+            color: white;
+            font-weight: bold;
+        }
+
+        .wishlist-match {
+            border: 2px solid var(--valorant-red) !important;
+            box-shadow: 0 0 20px rgba(255, 70, 85, 0.5);
+        }
+
+        /* Hero section styles */
+        .hero-section {
+            background: linear-gradient(135deg, rgba(255, 70, 85, 0.1) 0%, rgba(56, 157, 241, 0.1) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--valorant-red), var(--valorant-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .valorant-logo-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .crosshair-animation {
+            position: relative;
+            z-index: 2;
+            animation: rotate 10s linear infinite;
+        }
+
+        .pulse-rings {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .pulse-ring {
+            position: absolute;
+            border: 2px solid var(--valorant-red);
+            border-radius: 50%;
+            opacity: 0;
+            animation: pulse 3s infinite;
+        }
+
+        .pulse-ring:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: -40px;
+            left: -40px;
+            animation-delay: 0s;
+        }
+
+        .pulse-ring:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            top: -60px;
+            left: -60px;
+            animation-delay: 1s;
+        }
+
+        .pulse-ring:nth-child(3) {
+            width: 160px;
+            height: 160px;
+            top: -80px;
+            left: -80px;
+            animation-delay: 2s;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0;
+                transform: scale(0.1);
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1);
+            }
+        }
+
+        /* Enhanced skin card styles */
+        .skin-card-enhanced {
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(13, 17, 23, 0.9) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .skin-card-enhanced:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(255, 70, 85, 0.3);
+            border-color: var(--valorant-red);
+        }
+
+        .skin-card-enhanced::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(45deg, var(--valorant-red), var(--valorant-blue));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .skin-card-enhanced:hover::before {
+            opacity: 1;
+        }
+
+        .skin-image-placeholder {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(135deg, var(--valorant-red) 0%, var(--valorant-blue) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .weapon-icon {
+            font-size: 2rem;
+            color: white;
+            opacity: 0.8;
+        }
+
+        .sidebar {
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(15px);
+            border-right: 1px solid var(--border-color);
+            min-height: calc(100vh - 64px);
+            padding-top: 0;
+        }
+        
+        .sidebar .nav-link {
+            color: var(--text-muted);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin: 0.25rem 0.75rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .sidebar .nav-link:hover {
+            background: rgba(255, 70, 85, 0.1);
+            color: var(--valorant-red);
+            transform: translateX(5px);
+        }
+        
+        .sidebar .nav-link.active {
+            background: linear-gradient(135deg, var(--valorant-red), #ff6b7a);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 70, 85, 0.3);
+        }
+        
+        .sidebar .nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .main-content {
+            min-height: calc(100vh - 64px);
+            padding: 2rem 2rem 3rem 2rem;
+        }
+        
+        /* Mobile sidebar improvements */
+        .sidebar-overlay {
+            position: fixed;
+            top: 64px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 64px);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1025;
+            display: none;
+        }
+        
+        .sidebar-overlay.show {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 64px;
+                left: -100%;
+                width: 280px;
+                height: calc(100vh - 64px);
+                z-index: 1026;
+                transition: left 0.3s ease;
+                overflow-y: auto;
+            }
+            
+            .sidebar.show {
+                left: 0;
+            }
+            
+            .main-content {
+                padding: 1.5rem 1rem 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-crosshairs me-2"></i>
+                Valorant Skin Tracker
+            </a>
+            
+            <button class="navbar-toggler d-lg-none" type="button" id="sidebarToggle">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="navbar-nav ms-auto">
+                <!-- Language Selector -->
+                <div class="nav-item dropdown me-3">
+                    <select class="form-select language-selector" id="languageSelect">
+                        <option value="en" <%= lang === 'en' ? 'selected' : '' %>>🇺🇸 English</option>
+                        <option value="id" <%= lang === 'id' ? 'selected' : '' %>>🇮🇩 Bahasa Indonesia</option>
+                    </select>
+                </div>
+
+                <!-- Notifications -->
+                <div class="nav-item dropdown me-3">
+                    <a class="nav-link" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="notificationCount" style="display: none;">0</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" id="notificationMenu">
+                        <li><h6 class="dropdown-header">Notifications</h6></li>
+                        <li><div class="dropdown-item text-muted">No new notifications</div></li>
+                    </ul>
+                </div>
+
+                <!-- User Menu -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle me-1"></i>
+                        <% if (typeof user !== 'undefined' && user) { %>
+                            <%= user.username %>
+                        <% } else { %>
+                            User
+                        <% } %>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/dashboard/settings"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/auth/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid" style="margin-top: 64px; padding-top: 1rem;">
+        <div class="row">
+            <!-- Sidebar Overlay for mobile -->
+            <div class="sidebar-overlay" id="sidebarOverlay"></div>
+            
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 sidebar" id="sidebar">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link <%= typeof page !== 'undefined' && page === 'dashboard' ? 'active' : '' %>" href="/dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                <% if (typeof t !== 'undefined') { %>
+                                    <%= t('dashboard.menu.dashboard', lang || 'en') %>
+                                <% } else { %>
+                                    Dashboard
+                                <% } %>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <%= typeof page !== 'undefined' && page === 'store' ? 'active' : '' %>" href="/dashboard/store">
+                                <i class="fas fa-store me-2"></i>
+                                <% if (typeof t !== 'undefined') { %>
+                                    <%= t('dashboard.menu.store', lang || 'en') %>
+                                <% } else { %>
+                                    Daily Store
+                                <% } %>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <%= typeof page !== 'undefined' && page === 'wishlist' ? 'active' : '' %>" href="/dashboard/wishlist">
+                                <i class="fas fa-heart me-2"></i>
+                                <% if (typeof t !== 'undefined') { %>
+                                    <%= t('dashboard.menu.wishlist', lang || 'en') %>
+                                <% } else { %>
+                                    Wishlist
+                                <% } %>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <%= typeof page !== 'undefined' && page === 'analytics' ? 'active' : '' %>" href="/dashboard/analytics">
+                                <i class="fas fa-chart-line me-2"></i>
+                                <% if (typeof t !== 'undefined') { %>
+                                    <%= t('dashboard.menu.analytics', lang || 'en') %>
+                                <% } else { %>
+                                    Analytics
+                                <% } %>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <%= typeof page !== 'undefined' && page === 'global-analytics' ? 'active' : '' %>" href="/analytics">
+                                <i class="fas fa-globe me-2"></i>
+                                Global Analytics
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <%= typeof page !== 'undefined' && page === 'settings' ? 'active' : '' %>" href="/dashboard/settings">
+                                <i class="fas fa-cog me-2"></i>
+                                <% if (typeof t !== 'undefined') { %>
+                                    <%= t('dashboard.menu.settings', lang || 'en') %>
+                                <% } else { %>
+                                    Settings
+                                <% } %>
+                            </a>
+                        </li>
+                        
+                        <!-- User Info & Logout -->
+                        <hr class="my-3" style="border-color: var(--border-color);">
+                        <li class="nav-item">
+                            <div class="nav-link">
+                                <i class="fas fa-user me-2"></i>
+                                <small class="text-muted">
+                                    <% if (typeof user !== 'undefined' && user) { %>
+                                        <%= user.username || user.discord_id %>
+                                    <% } else { %>
+                                        Guest User
+                                    <% } %>
+                                </small>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/auth/logout">
+                                <i class="fas fa-sign-out-alt me-2"></i>
+                                <% if (typeof t !== 'undefined') { %>
+                                    <%= t('dashboard.menu.logout', lang || 'en') %>
+                                <% } else { %>
+                                    Logout
+                                <% } %>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <%- body %>
+            </main>
+        </div>
+    </div>
+
+    <!-- Socket.IO for real-time updates -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        // Apply dynamic colors from data attributes to avoid CSS parsing errors
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set weapon icon colors
+            document.querySelectorAll('.weapon-icon[data-weapon-color]').forEach(icon => {
+                const color = icon.getAttribute('data-weapon-color');
+                if (color) {
+                    icon.style.color = color;
+                }
+            });
+            
+            // Set rarity indicator colors
+            document.querySelectorAll('.rarity-indicator[data-rarity-color]').forEach(indicator => {
+                const color = indicator.getAttribute('data-rarity-color');
+                if (color) {
+                    indicator.style.color = color;
+                }
+            });
+        });
+
+        // Initialize Socket.IO
+        const socket = io();
+        
+        // Join user room if logged in
+        if (typeof user !== 'undefined' && user) {
+            socket.emit('join-room', user.id);
+        }
+
+        // Listen for real-time updates
+        socket.on('store_updated', function(data) {
+            showNotification('Store updated!', 'Your store has been refreshed with new data.', 'success');
+            // Refresh page if on store page
+            if (window.location.pathname.includes('/store')) {
+                setTimeout(() => window.location.reload(), 2000);
+            }
+        });
+
+        socket.on('wishlist_match', function(data) {
+            showNotification('Wishlist Match!', `${data.skinName} is now available in your store!`, 'success');
+            updateNotificationCount();
+        });
+
+        // Language selector
+        document.getElementById('languageSelect').addEventListener('change', function() {
+            const lang = this.value;
+            window.location.href = `/lang/${lang}?redirect=${encodeURIComponent(window.location.pathname)}`;
+        });
+
+        // Sidebar toggle for mobile
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        
+        if (sidebarToggle && sidebar && sidebarOverlay) {
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('show');
+                sidebarOverlay.classList.toggle('show');
+            });
+            
+            sidebarOverlay.addEventListener('click', function() {
+                sidebar.classList.remove('show');
+                sidebarOverlay.classList.remove('show');
+            });
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+                        sidebar.classList.remove('show');
+                        sidebarOverlay.classList.remove('show');
+                    }
+                }
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    sidebar.classList.remove('show');
+                    sidebarOverlay.classList.remove('show');
+                }
+            });
+        }
+
+        // Notification functions
+        function showNotification(title, message, type = 'info') {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'primary'} border-0`;
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <strong>${title}</strong><br>${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            
+            // Add to page
+            let toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toastContainer';
+                toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+                document.body.appendChild(toastContainer);
+            }
+            
+            toastContainer.appendChild(toast);
+            
+            // Show toast
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+            
+            // Remove from DOM after hiding
+            toast.addEventListener('hidden.bs.toast', () => {
+                toast.remove();
+            });
+        }
+
+        function updateNotificationCount() {
+            fetch('/api/notifications?unread=true')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.count > 0) {
+                        const badge = document.getElementById('notificationCount');
+                        badge.textContent = data.count;
+                        badge.style.display = 'inline';
+                    }
+                })
+                .catch(console.error);
+        }
+
+        // Load notifications on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateNotificationCount();
+            loadRecentNotifications();
+        });
+
+        function loadRecentNotifications() {
+            fetch('/api/notifications?limit=5')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.data.length > 0) {
+                        const menu = document.getElementById('notificationMenu');
+                        menu.innerHTML = '<li><h6 class="dropdown-header">Recent Notifications</h6></li>';
+                        
+                        data.data.forEach(notification => {
+                            const item = document.createElement('li');
+                            item.innerHTML = `
+                                <div class="dropdown-item ${notification.is_read ? '' : 'fw-bold'}">
+                                    <div class="d-flex justify-content-between">
+                                        <span>${notification.title}</span>
+                                        <small class="text-muted">${new Date(notification.sent_at).toLocaleDateString()}</small>
+                                    </div>
+                                    <small class="text-muted">${notification.message}</small>
+                                </div>
+                            `;
+                            menu.appendChild(item);
+                        });
+                        
+                        // Add "View All" link
+                        const viewAll = document.createElement('li');
+                        viewAll.innerHTML = '<hr class="dropdown-divider"><li><a class="dropdown-item text-center" href="/dashboard/notifications">View All Notifications</a></li>';
+                        menu.appendChild(viewAll);
+                    }
+                })
+                .catch(console.error);
+        }
+
+        // Add refresh button functionality
+        function refreshStore() {
+            const button = document.querySelector('[onclick="refreshStore()"]');
+            const originalText = button.innerHTML;
+            
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Refreshing...';
+            button.disabled = true;
+            
+            fetch('/api/store/refresh', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then data => {
+                if (data.success) {
+                    showNotification('Success!', data.message, 'success');
+                    setTimeout(() => window.location.reload(), 2000);
+                } else {
+                    showNotification('Error!', data.error || 'Failed to refresh store', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Refresh error:', error);
+                showNotification('Error!', 'Failed to refresh store', 'error');
+            })
+            .finally(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            });
+        }
+
+        // Wishlist functions
+        function addToWishlist(skinUuid, skinName) {
+            fetch('/api/wishlist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    skinUuid: skinUuid,
+                    skinName: skinName,
+                    priority: 1
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Added!', `${skinName} added to wishlist`, 'success');
+                    // Update button
+                    const button = document.querySelector(`[onclick="addToWishlist('${skinUuid.replace(/'/g, "\\'")}', '${skinName.replace(/'/g, "\\'")}')"]`);
+                    if (button) {
+                        button.innerHTML = '<i class="fas fa-heart"></i>';
+                        button.className = 'btn btn-danger btn-sm';
+                        button.onclick = () => removeFromWishlist(skinUuid, skinName);
+                    }
+                } else {
+                    showNotification('Error!', data.error || 'Failed to add to wishlist', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Add to wishlist error:', error);
+                showNotification('Error!', 'Failed to add to wishlist', 'error');
+            });
+        }
+
+        function removeFromWishlist(skinUuid, skinName) {
+            fetch(`/api/wishlist/${skinUuid}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Removed!', `${skinName} removed from wishlist`, 'success');
+                    // Update button
+                    const button = document.querySelector(`[onclick="removeFromWishlist('${skinUuid.replace(/'/g, "\\'")}', '${skinName.replace(/'/g, "\\'")}')"]`);
+                    if (button) {
+                        button.innerHTML = '<i class="far fa-heart"></i>';
+                        button.className = 'btn btn-outline-danger btn-sm';
+                        button.onclick = () => addToWishlist(skinUuid, skinName);
+                    }
+                } else {
+                    showNotification('Error!', data.error || 'Failed to remove from wishlist', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Remove from wishlist error:', error);
+                showNotification('Error!', 'Failed to remove from wishlist', 'error');
+            });
+        }
+
+        function viewPriceHistory(skinUuid) {
+            // Open modal or navigate to price history page
+            window.open(`/api/skins/${skinUuid}/price-history`, '_blank');
+        }
+
+        function removeFromWishlist(skinUuid, skinName) {
+            fetch(`/api/wishlist/${skinUuid}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Removed!', `${skinName} removed from wishlist`, 'success');
+                    // Update button or remove item
+                    const button = document.querySelector(`[onclick="removeFromWishlist('${skinUuid.replace(/'/g, "\\'")}', '${skinName.replace(/'/g, "\\'")}')"]`);
+                    if (button) {
+                        if (window.location.pathname.includes('/wishlist')) {
+                            // Remove the entire card on wishlist page
+                            button.closest('.skin-card, .card').remove();
+                        } else {
+                            // Change button back to "Add to Wishlist"
+                            button.innerHTML = '<i class="fas fa-heart-broken me-1"></i>Add to Wishlist';
+                            button.className = button.className.replace('btn-danger', 'btn-outline-danger');
+                            button.onclick = () => addToWishlist(skinUuid.replace(/'/g, "\\'"), skinName.replace(/'/g, "\\'"));
+                        }
+                    }
+                } else {
+                    showNotification('Error!', data.error || 'Failed to remove from wishlist', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Wishlist error:', error);
+                showNotification('Error!', 'Failed to remove from wishlist', 'error');
+            });
+        }
+
+        // Apply dynamic colors from data attributes to avoid CSS parsing errors
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set weapon icon colors
+            document.querySelectorAll('.weapon-icon[data-weapon-color]').forEach(icon => {
+                const color = icon.getAttribute('data-weapon-color');
+                if (color) {
+                    icon.style.color = color;
+                }
+            });
+            
+            // Set rarity indicator colors
+            document.querySelectorAll('.rarity-indicator[data-rarity-color]').forEach(indicator => {
+                const color = indicator.getAttribute('data-rarity-color');
+                if (color) {
+                    indicator.style.color = color;
+                }
+            });
+        });
+    </script>
+    <%- script %>
+</body>
+</html>

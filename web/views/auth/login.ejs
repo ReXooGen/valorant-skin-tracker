@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Valorant Skin Tracker</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --valorant-red: #ff4655;
+            --valorant-dark: #0f1419;
+            --bg-dark: #1a1a1a;
+            --bg-darker: #0d1117;
+            --text-light: #f0f6fc;
+            --border-color: #30363d;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
+            color: var(--text-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: rgba(26, 26, 26, 0.9);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-primary {
+            background: var(--valorant-red);
+            border-color: var(--valorant-red);
+        }
+
+        .btn-primary:hover {
+            background: #e63946;
+            border-color: #e63946;
+        }
+
+        .form-control {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+        }
+
+        .form-control:focus {
+            background: rgba(26, 26, 26, 0.9);
+            border-color: var(--valorant-red);
+            color: var(--text-light);
+            box-shadow: 0 0 0 0.2rem rgba(255, 70, 85, 0.25);
+        }
+
+        .logo {
+            color: var(--valorant-red);
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .alert {
+            border: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .text-muted {
+            color: #8b949e !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-container">
+            <div class="logo">
+                <i class="fas fa-crosshairs"></i>
+                <div class="h4 mt-2">Valorant Skin Tracker</div>
+            </div>
+
+            <div class="card">
+                <div class="card-body p-4">
+                    <h3 class="card-title text-center mb-4"><%= title %></h3>
+
+                    <% if (typeof error !== 'undefined' && error) { %>
+                        <div class="alert alert-danger" role="alert">
+                            <% if (error === 'missing_discord_id') { %>
+                                <% if (lang === 'id') { %>
+                                    Discord ID diperlukan untuk masuk.
+                                <% } else { %>
+                                    Discord ID is required to login.
+                                <% } %>
+                            <% } else if (error === 'login_failed') { %>
+                                <% if (lang === 'id') { %>
+                                    Gagal masuk. Silakan coba lagi.
+                                <% } else { %>
+                                    Login failed. Please try again.
+                                <% } %>
+                            <% } else { %>
+                                <%= error %>
+                            <% } %>
+                        </div>
+                    <% } %>
+
+                    <form method="POST" action="/auth/login">
+                        <% if (typeof redirect !== 'undefined' && redirect) { %>
+                            <input type="hidden" name="redirect" value="<%= redirect %>">
+                        <% } %>
+                        <div class="mb-3">
+                            <label for="discordId" class="form-label">
+                                <i class="fab fa-discord me-2"></i>
+                                <% if (lang === 'id') { %>
+                                    Discord ID
+                                <% } else { %>
+                                    Discord ID
+                                <% } %>
+                            </label>
+                            <input type="text" class="form-control" id="discordId" name="discordId" required
+                                   placeholder="<% if (lang === 'id') { %>Masukkan Discord ID Anda<% } else { %>Enter your Discord ID<% } %>"
+                                   pattern="[0-9]{17,19}" title="Discord ID should be 17-19 digits">
+                            <div class="form-text text-muted">
+                                <% if (lang === 'id') { %>
+                                    Dapatkan Discord ID: Settings → Advanced → Developer Mode → Klik kanan profil → Copy User ID
+                                <% } else { %>
+                                    Get Discord ID: Settings → Advanced → Developer Mode → Right-click profile → Copy User ID
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 mb-3">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            <% if (lang === 'id') { %>
+                                Masuk
+                            <% } else { %>
+                                Login
+                            <% } %>
+                        </button>
+                    </form>
+
+                    <div class="text-center">
+                        <small class="text-muted">
+                            <% if (lang === 'id') { %>
+                                Belum punya akun? Login akan membuat akun baru secara otomatis.
+                            <% } else { %>
+                                Don't have an account? Login will automatically create a new account.
+                            <% } %>
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Language Selector -->
+            <div class="text-center mt-3">
+                <div class="btn-group" role="group">
+                    <a href="/lang/en" class="btn btn-outline-secondary btn-sm <%= lang === 'en' ? 'active' : '' %>">
+                        🇺🇸 English
+                    </a>
+                    <a href="/lang/id" class="btn btn-outline-secondary btn-sm <%= lang === 'id' ? 'active' : '' %>">
+                        🇮🇩 Bahasa Indonesia
+                    </a>
+                </div>
+            </div>
+
+            <!-- Info Cards -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body p-3">
+                            <h6 class="card-title">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <% if (lang === 'id') { %>
+                                    Fitur Web Dashboard
+                                <% } else { %>
+                                    Web Dashboard Features
+                                <% } %>
+                            </h6>
+                            <ul class="list-unstyled mb-0 small">
+                                <li><i class="fas fa-check text-success me-2"></i>
+                                    <% if (lang === 'id') { %>Manajemen token yang mudah<% } else { %>Easy token management<% } %>
+                                </li>
+                                <li><i class="fas fa-check text-success me-2"></i>
+                                    <% if (lang === 'id') { %>Analitik dan statistik detail<% } else { %>Detailed analytics and statistics<% } %>
+                                </li>
+                                <li><i class="fas fa-check text-success me-2"></i>
+                                    <% if (lang === 'id') { %>Tracking harga skin real-time<% } else { %>Real-time skin price tracking<% } %>
+                                </li>
+                                <li><i class="fas fa-check text-success me-2"></i>
+                                    <% if (lang === 'id') { %>Interface yang mobile-friendly<% } else { %>Mobile-friendly interface<% } %>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
