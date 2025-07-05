@@ -335,8 +335,6 @@ The bot automatically converts VP prices to Indonesian Rupiah based on official 
 ### Analytics Dashboard
 ![Comprehensive analytics with charts](https://via.placeholder.com/800x400/389df1/ffffff?text=Analytics+Dashboard)
 
-### Mobile Interface
-![Mobile-responsive design](https://via.placeholder.com/400x600/6f42c1/ffffff?text=Mobile+Responsive)
 
 ## 🐛 Troubleshooting
 
